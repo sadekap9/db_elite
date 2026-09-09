@@ -276,7 +276,8 @@ export const localStore = {
     const store = readStore();
     const newId = `pur_${Date.now()}`;
     const qtyNum = Number(p.qty) || 1;
-    const amount = p.amountINR ? (String(p.amountINR).startsWith("₹") ? p.amountINR : `₹${p.amountINR}`) : "₹0";
+    const cleanAmt = String(p.amountINR || "").replace(/[^0-9]/g, "").replace(/^0+/, "");
+    const amount = cleanAmt ? `₹${Number(cleanAmt).toLocaleString("en-IN")}` : "₹0";
 
     const newPurchase: PurchaseRecord = {
       id: newId,

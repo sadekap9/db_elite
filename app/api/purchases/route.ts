@@ -48,7 +48,8 @@ export async function POST(req: Request) {
     }
 
     const qtyNum = Number(qty) || 1;
-    const formattedAmount = amountINR ? (String(amountINR).startsWith("₹") ? amountINR : `₹${amountINR}`) : "₹0";
+    const cleanDigits = String(amountINR || "").replace(/[^0-9]/g, "").replace(/^0+/, "");
+    const formattedAmount = cleanDigits ? `₹${Number(cleanDigits).toLocaleString("en-IN")}` : "₹0";
 
     // 1. Add to localStore
     const newPurchase = localStore.addPurchase({
