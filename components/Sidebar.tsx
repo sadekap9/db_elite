@@ -40,6 +40,12 @@ export default function Sidebar({
   const handleSelect = (name: string, href: string) => {
     setSelected(name);
     if (onSelectTab) onSelectTab(name);
+
+    // Auto-close sidebar on mobile after choosing item
+    if (typeof window !== "undefined" && window.innerWidth < 768 && onToggleSidebar) {
+      onToggleSidebar();
+    }
+
     if (href && href !== "#") {
       router.push(href);
     }
@@ -51,13 +57,34 @@ export default function Sidebar({
       {isOpen && (
         <div
           onClick={onToggleSidebar}
-          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            onToggleSidebar?.();
+          }}
+          className="fixed inset-0 bg-black/60 backdrop-blur-xs z-[90] md:hidden animate-in fade-in duration-200"
         />
       )}
 
+      {/* Floating Mobile Toggle Button (Visible when closed on mobile) */}
+      {!isOpen && (
+        <button
+          onClick={onToggleSidebar}
+          onTouchEnd={(e) => {
+            e.preventDefault();
+            onToggleSidebar?.();
+          }}
+          className="fixed bottom-5 left-5 z-[80] md:hidden w-12 h-12 rounded-full bg-[#2D142E] text-[#F5CC96] border border-[#F5CC96]/40 shadow-2xl flex items-center justify-center cursor-pointer active:scale-95 transition-transform"
+          title="Open Menu"
+        >
+          <Crown className="w-5 h-5" />
+        </button>
+      )}
+
       <aside
-        className={`fixed md:sticky top-0 left-0 h-screen shrink-0 text-white flex flex-col justify-between select-none shadow-2xl md:shadow-xl z-50 md:z-30 transition-all duration-300 overflow-y-auto no-scrollbar ${
-          isOpen ? "w-[230px] translate-x-0" : "-translate-x-full md:translate-x-0 md:w-16"
+        className={`fixed md:sticky top-0 left-0 h-screen shrink-0 text-white flex flex-col justify-between select-none shadow-2xl md:shadow-xl z-[100] md:z-30 transition-all duration-300 overflow-y-auto no-scrollbar ${
+          isOpen
+            ? "w-[240px] translate-x-0 pointer-events-auto"
+            : "-translate-x-full md:translate-x-0 md:w-16 md:pointer-events-auto pointer-events-none"
         }`}
         style={{
           background: "linear-gradient(180deg, #2D142E 0%, #1F0B21 65%, #150416 100%)",
@@ -115,6 +142,10 @@ export default function Sidebar({
               <button
                 key={item.name}
                 onClick={() => handleSelect(item.name, item.href)}
+                onTouchEnd={(e) => {
+                  e.preventDefault();
+                  handleSelect(item.name, item.href);
+                }}
                 title={!isOpen ? item.name : undefined}
                 className={`w-full flex items-center ${
                   isOpen ? "gap-3 px-3 py-2" : "justify-center p-2.5"
