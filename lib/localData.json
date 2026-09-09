@@ -1,21 +1,31 @@
 {
   "customers": [
     {
-      "id": "1788963671796",
-      "name": "sidddiqa",
+      "id": "1788975315888",
+      "name": "siddiqa",
       "phone": "9510448090",
-      "status": "Silver",
-      "totalDresses": 5,
-      "totalAmountINR": "₹50000",
+      "status": "Elite",
+      "totalDresses": 14,
+      "totalAmountINR": "₹4,50,000",
       "lastPurchaseDate": "2026-09-08",
       "createdAt": "2026-09-09T14:21:11.796Z"
     }
   ],
   "purchases": [
     {
+      "id": "pur_1788975315940",
+      "customerId": "1788975315888",
+      "dressName": "Royal Abaya Collection",
+      "collection": "Royal Collection",
+      "purchaseDate": "2026-09-08",
+      "amountINR": "₹400000",
+      "qty": 9,
+      "createdAt": "2026-09-09T17:35:15.940Z"
+    },
+    {
       "id": "pur_1788963671807",
-      "customerId": "1788963671796",
-      "dressName": "Initial Purchase",
+      "customerId": "1788975315888",
+      "dressName": "Initial Dress Purchase",
       "collection": "Royal Collection",
       "purchaseDate": "2026-09-08",
       "amountINR": "₹50000",

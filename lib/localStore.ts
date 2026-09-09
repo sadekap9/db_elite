@@ -100,6 +100,64 @@ const initialData: StoreData = {
   ],
 };
 
+function normPhone(p: string): string {
+  return String(p || "").replace(/[^0-9]/g, "");
+}
+
+function deduplicateStore(data: StoreData): StoreData {
+  if (!data.customers || data.customers.length <= 1) return data;
+
+  const phoneMap = new Map<string, CustomerRecord>();
+  const idRemap = new Map<string, string>();
+
+  for (const cust of data.customers) {
+    const key = normPhone(cust.phone);
+    if (!key) continue;
+
+    if (!phoneMap.has(key)) {
+      phoneMap.set(key, { ...cust });
+    } else {
+      const primary = phoneMap.get(key)!;
+      idRemap.set(String(cust.id), String(primary.id));
+
+      const dresses1 = primary.totalDresses || 0;
+      const dresses2 = cust.totalDresses || 0;
+      const combinedDresses = dresses1 + dresses2;
+
+      const amt1 = Number(String(primary.totalAmountINR || "0").replace(/[^0-9]/g, "")) || 0;
+      const amt2 = Number(String(cust.totalAmountINR || "0").replace(/[^0-9]/g, "")) || 0;
+      const combinedAmt = amt1 + amt2;
+
+      let newStatus = primary.status;
+      if (combinedDresses >= 12) newStatus = "Elite";
+      else if (combinedDresses === 11) newStatus = "Almost Elite";
+      else if (combinedDresses >= 8) newStatus = "Gold";
+      else if (combinedDresses >= 4) newStatus = "Silver";
+
+      primary.totalDresses = combinedDresses;
+      primary.totalAmountINR = combinedAmt > 0 ? `₹${combinedAmt.toLocaleString("en-IN")}` : primary.totalAmountINR;
+      primary.status = newStatus;
+      if (cust.name && cust.name.length > (primary.name || "").length) {
+        primary.name = cust.name;
+      }
+      if (cust.lastPurchaseDate && (!primary.lastPurchaseDate || cust.lastPurchaseDate > primary.lastPurchaseDate)) {
+        primary.lastPurchaseDate = cust.lastPurchaseDate;
+      }
+    }
+  }
+
+  if (idRemap.size > 0 && data.purchases) {
+    data.purchases.forEach((p) => {
+      if (idRemap.has(String(p.customerId))) {
+        p.customerId = idRemap.get(String(p.customerId))!;
+      }
+    });
+  }
+
+  data.customers = Array.from(phoneMap.values());
+  return data;
+}
+
 function readStore(): StoreData {
   try {
     if (!fs.existsSync(DATA_FILE)) {
@@ -112,7 +170,11 @@ function readStore(): StoreData {
       writeStore(initialData);
       return initialData;
     }
-    return data;
+    const cleanData = deduplicateStore(data);
+    if (cleanData.customers.length !== data.customers.length) {
+      writeStore(cleanData);
+    }
+    return cleanData;
   } catch (err) {
     console.error("Error reading localData.json store:", err);
     return initialData;
@@ -136,9 +198,38 @@ export const localStore = {
   
   addCustomer: (cust: Partial<CustomerRecord> & { name: string; phone: string }) => {
     const store = readStore();
-    const newId = String(Date.now());
+    const cleanPhone = normPhone(cust.phone);
+    const existingIdx = store.customers.findIndex((c) => normPhone(c.phone) === cleanPhone);
+
     const dresses = Number(cust.totalDresses) || 0;
-    
+    const amtStr = String(cust.totalAmountINR || "0").replace(/[^0-9]/g, "");
+    const amtNum = Number(amtStr) || 0;
+
+    if (existingIdx !== -1) {
+      const existing = store.customers[existingIdx];
+      const newDresses = (existing.totalDresses || 0) + dresses;
+
+      const existingAmt = Number(String(existing.totalAmountINR || "0").replace(/[^0-9]/g, "")) || 0;
+      const newAmt = existingAmt + amtNum;
+
+      let status = existing.status;
+      if (newDresses >= 12) status = "Elite";
+      else if (newDresses === 11) status = "Almost Elite";
+      else if (newDresses >= 8) status = "Gold";
+      else if (newDresses >= 4) status = "Silver";
+
+      existing.name = cust.name || existing.name;
+      existing.totalDresses = newDresses;
+      existing.totalAmountINR = newAmt > 0 ? `₹${newAmt.toLocaleString("en-IN")}` : existing.totalAmountINR;
+      existing.status = status;
+      if (cust.lastPurchaseDate) {
+        existing.lastPurchaseDate = cust.lastPurchaseDate;
+      }
+      writeStore(store);
+      return existing;
+    }
+
+    const newId = String(Date.now());
     let status = cust.status || "Regular";
     if (dresses >= 12) status = "Elite";
     else if (dresses === 11) status = "Almost Elite";
