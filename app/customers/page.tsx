@@ -128,6 +128,12 @@ export default function CustomersPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
     fetch("/api/customers")
       .then((res) => res.json())
       .then((data) => {

@@ -22,6 +22,12 @@ export default function ReportsPage() {
   const [quickActionType, setQuickActionType] = useState<string | null>(null);
   const [, setSearchQuery] = useState("");
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {

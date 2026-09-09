@@ -44,6 +44,12 @@ export default function MessageTemplatesPage() {
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
     // Fetch Templates
     fetch("/api/message-templates")
       .then((res) => res.json())

@@ -17,6 +17,12 @@ export default function Home() {
   const [activeNavTab, setActiveNavTab] = useState("Dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   // Modal States
   const [selectedCustomer, setSelectedCustomer] = useState<CustomerData | null>(null);
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateItem | null>(null);

@@ -33,6 +33,12 @@ export default function SettingsPage() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isSaved, setIsSaved] = useState(false);
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   // Default Today and 6 Months Later
   const todayStr = new Date().toISOString().split("T")[0];
   const sixMonthsLater = new Date();

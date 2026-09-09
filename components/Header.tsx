@@ -16,6 +16,7 @@ import {
   Eye,
   EyeOff,
   Save,
+  Menu,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 
@@ -25,7 +26,7 @@ interface HeaderProps {
   onToggleSidebar?: () => void;
 }
 
-export default function Header({ onSearchChange }: HeaderProps) {
+export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps) {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -136,15 +137,26 @@ export default function Header({ onSearchChange }: HeaderProps) {
 
         {/* Top Row: Search Bar & Admin Controls */}
         <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-3">
-          {/* Search Bar */}
-          <div className="relative w-full sm:w-96">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C718F]" />
-            <input
-              type="text"
-              placeholder="Search customers by name, phone or dress..."
-              onChange={(e) => onSearchChange?.(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-white/90 border border-[#E3D3E5] text-xs font-medium text-[#2D142E] placeholder-[#957C98] focus:outline-none focus:ring-2 focus:ring-[#713476]/30 transition-all shadow-2xs"
-            />
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            {onToggleSidebar && (
+              <button
+                onClick={onToggleSidebar}
+                className="md:hidden p-2 rounded-full bg-white/90 border border-[#E3D3E5] text-[#4D2051] hover:bg-[#EADBEE] transition-all cursor-pointer shadow-2xs shrink-0"
+                title="Toggle Menu"
+              >
+                <Menu className="w-4 h-4" />
+              </button>
+            )}
+            {/* Search Bar */}
+            <div className="relative w-full sm:w-80 md:w-96">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C718F]" />
+              <input
+                type="text"
+                placeholder="Search customers by name, phone or dress..."
+                onChange={(e) => onSearchChange?.(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 rounded-full bg-white/90 border border-[#E3D3E5] text-xs font-medium text-[#2D142E] placeholder-[#957C98] focus:outline-none focus:ring-2 focus:ring-[#713476]/30 transition-all shadow-2xs"
+              />
+            </div>
           </div>
 
           {/* Right Actions */}

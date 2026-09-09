@@ -46,14 +46,23 @@ export default function Sidebar({
   };
 
   return (
-    <aside
-      className={`sticky top-0 h-screen shrink-0 text-white flex flex-col justify-between select-none relative shadow-xl z-30 transition-all duration-300 overflow-y-auto no-scrollbar ${
-        isOpen ? "w-[220px]" : "w-16"
-      }`}
-      style={{
-        background: "linear-gradient(180deg, #2D142E 0%, #1F0B21 65%, #150416 100%)",
-      }}
-    >
+    <>
+      {/* Mobile Backdrop Overlay */}
+      {isOpen && (
+        <div
+          onClick={onToggleSidebar}
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs z-40 md:hidden animate-in fade-in duration-200"
+        />
+      )}
+
+      <aside
+        className={`fixed md:sticky top-0 left-0 h-screen shrink-0 text-white flex flex-col justify-between select-none shadow-2xl md:shadow-xl z-50 md:z-30 transition-all duration-300 overflow-y-auto no-scrollbar ${
+          isOpen ? "w-[230px] translate-x-0" : "-translate-x-full md:translate-x-0 md:w-16"
+        }`}
+        style={{
+          background: "linear-gradient(180deg, #2D142E 0%, #1F0B21 65%, #150416 100%)",
+        }}
+      >
       {/* Top Header & Logo */}
       <div className="p-3">
         <div className="flex items-center justify-between pb-3 border-b border-[#47224B]/70">
@@ -158,5 +167,6 @@ export default function Sidebar({
         </div>
       )}
     </aside>
-  );
+  </>
+);
 }
