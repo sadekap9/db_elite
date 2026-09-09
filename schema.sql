@@ -136,6 +136,6 @@ VALUES
 INSERT INTO message_templates (id, title, category, message_body, variables)
 VALUES 
 (1, '11/12 Milestone VIP Alert', 'Milestone', 'Dear {client_name}, you are just 1 dress purchase away from unlocking Dubai Boutique Elite VIP status! ({dress_count}/{target_count} dresses acquired)', '{client_name}, {dress_count}, {target_count}'),
-(2, 'Birthday Royalty Greeting', 'Birthday', 'Wishing you a glorious birthday, {client_name}! We have prepared a special bespoke gift for you at our Dubai Atelier.', '{client_name}'),
+(2, 'Elite Circle Private Invitation', 'VIP', 'Dear {client_name}, we are delighted to invite you to an exclusive private fitting session at our Dubai Atelier.', '{client_name}'),
 (3, 'Haute Couture Exclusive Preview', 'Promotion', 'Dear {client_name}, explore our private new Haute Couture collection launching this weekend.', '{client_name}')
 ON DUPLICATE KEY UPDATE title=VALUES(title);

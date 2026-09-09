@@ -185,7 +185,7 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
                       <span>Notifications & Alerts</span>
                     </span>
                     <span className="px-2 py-0.5 rounded-full bg-[#F5ECF6] text-[#79347E] text-[10px] font-bold">
-                      3 New
+                      2 New
                     </span>
                   </div>
 
@@ -201,10 +201,10 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
 
                     <div className="p-2.5 rounded-2xl bg-[#FAF3FA] border border-[#EEDBF0] space-y-1">
                       <span className="font-bold text-[#2D142E] block">
-                        Birthday Alert: Sheikha Mariam
+                        Elite Status Unlocked: Siddiqa
                       </span>
                       <span className="text-[10px] text-[#7E6380] block">
-                        Birthday coming up on 12 Sep. Dispatch greeting!
+                        Customer has reached 14 dresses and unlocked Elite Circle!
                       </span>
                     </div>
 

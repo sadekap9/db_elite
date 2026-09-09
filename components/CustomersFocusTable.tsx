@@ -14,7 +14,7 @@ export interface CustomerData {
   lastPurchase?: string;
   statusText?: string;
   statusBadge?: string;
-  category?: "Almost Elite" | "Birthdays" | "Inactive" | "Recently Added" | string;
+  category?: "Almost Elite" | "Inactive" | "Recently Added" | string;
 }
 
 interface CustomersFocusTableProps {

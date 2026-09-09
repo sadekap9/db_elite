@@ -325,8 +325,6 @@ export default function CustomersPage() {
         ? c.tier === "Elite Circle"
         : selectedCategory === "Almost Elite"
         ? c.tier === "Almost Elite"
-        : selectedCategory === "Birthdays"
-        ? c.birthday.includes("Sep")
         : selectedCategory === "Inactive"
         ? c.category === "Inactive"
         : true;
@@ -405,7 +403,7 @@ export default function CustomersPage() {
               <h3 className="font-serif text-base font-bold text-[#2D142E] mr-2">
                 Client Roster ({filteredCustomers.length})
               </h3>
-              {["All", "Elite Circle", "Almost Elite", "Birthdays", "Inactive"].map((cat) => (
+              {["All", "Elite Circle", "Almost Elite", "Inactive"].map((cat) => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
@@ -658,12 +656,6 @@ export default function CustomersPage() {
                         <span className="flex items-center gap-1.5">
                           <Mail className="w-3.5 h-3.5 text-[#86378D]" />
                           {activeCustomerDrawer.email}
-                        </span>
-                      )}
-                      {activeCustomerDrawer.birthday && (
-                        <span className="flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-[#86378D]" />
-                          Birthday: {activeCustomerDrawer.birthday}
                         </span>
                       )}
                     </div>
