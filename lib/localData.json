@@ -1,0 +1,57 @@
+{
+  "customers": [
+    {
+      "id": "1788963671796",
+      "name": "sidddiqa",
+      "phone": "9510448090",
+      "status": "Silver",
+      "totalDresses": 5,
+      "totalAmountINR": "₹50000",
+      "lastPurchaseDate": "2026-09-08",
+      "createdAt": "2026-09-09T14:21:11.796Z"
+    }
+  ],
+  "purchases": [
+    {
+      "id": "pur_1788963671807",
+      "customerId": "1788963671796",
+      "dressName": "Initial Purchase",
+      "collection": "Royal Collection",
+      "purchaseDate": "2026-09-08",
+      "amountINR": "₹50000",
+      "qty": 5,
+      "createdAt": "2026-09-09T14:21:11.807Z"
+    }
+  ],
+  "templates": [],
+  "rules": [
+    {
+      "id": "1",
+      "startDate": "2024-01-01",
+      "endDate": "2024-06-30",
+      "durationMonths": 6,
+      "targetDresses": 6,
+      "tierName": "Gold VIP Member",
+      "description": "Buy 6 dresses between 2024-01-01 and 2024-06-30 (6 Months) to unlock Gold VIP Member status.",
+      "ruleName": "Mid-Year Gold Progress",
+      "dressesRequired": 6,
+      "amountRequiredINR": "₹1,00,000",
+      "periodDays": 180,
+      "rewardBenefit": "15% Exclusive Discount"
+    },
+    {
+      "id": "2",
+      "startDate": "2024-01-01",
+      "endDate": "2024-12-31",
+      "durationMonths": 12,
+      "targetDresses": 12,
+      "tierName": "Elite Circle VIP",
+      "description": "Buy 12 dresses between 2024-01-01 and 2024-12-31 (12 Months) to unlock Elite Circle VIP status.",
+      "ruleName": "12-Dress Annual Elite Target",
+      "dressesRequired": 12,
+      "amountRequiredINR": "₹2,00,000",
+      "periodDays": 365,
+      "rewardBenefit": "20% Exclusive Discount & Private Atelier Fitting"
+    }
+  ]
+}
