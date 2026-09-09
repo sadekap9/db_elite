@@ -15,13 +15,25 @@ interface MessageModalProps {
 function getDefaultMessage(customer?: CustomerData | null, template?: TemplateItem | null) {
   if (customer) {
     if (template) {
-      return `Dear ${customer.name},\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique ELITE`;
+      return `Dear ${customer.name},\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique`;
     }
-    const statusInfo = customer.statusText || customer.statusBadge || "VIP status";
-    return `Dear ${customer.name},\n\nHope you are having a wonderful day! You have purchased ${customer.dressesCount} out of ${customer.totalTarget} dresses this year. You are just ${statusInfo} from unlocking full Elite Circle privileges!\n\nWarm regards,\nDubai's Boutique ELITE`;
+    const dresses = customer.dressesCount || 0;
+    const target = customer.totalTarget || 12;
+    const remaining = target - dresses;
+
+    let progressText = "";
+    if (dresses >= target) {
+      progressText = `Congratulations! You have unlocked full Elite Circle privileges!`;
+    } else if (remaining === 1) {
+      progressText = `You are just 1 dress away from unlocking full Elite Circle privileges!`;
+    } else {
+      progressText = `You are just ${remaining} dresses away from unlocking full Elite Circle privileges!`;
+    }
+
+    return `Dear ${customer.name},\n\nHope you are having a wonderful day! You have purchased ${dresses} out of ${target} dresses this year. ${progressText}\n\nWarm regards,\nDubai's Boutique`;
   }
   if (template) {
-    return `Dear Valued Client,\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique ELITE`;
+    return `Dear Valued Client,\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique`;
   }
   return "";
 }
