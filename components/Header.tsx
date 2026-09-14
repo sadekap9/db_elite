@@ -45,39 +45,24 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
   const notifRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Load saved admin details from localStorage
+  // Load saved admin details from Firestore & localStorage
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const savedName = localStorage.getItem("dubai_boutique_admin_name");
-      if (
-        savedName &&
-        savedName !== "Dubai Boutique Admin" &&
-        savedName !== "Dubai's Boutique" &&
-        !savedName.toLowerCase().includes("dubai's boutique")
-      ) {
-        setAdminName(savedName);
-      } else {
-        setAdminName("Siddiqa Parveen");
-        localStorage.setItem("dubai_boutique_admin_name", "Siddiqa Parveen");
-      }
-
-      const savedPhone =
-        localStorage.getItem("dubai_boutique_admin_phone") ||
-        localStorage.getItem("admin_phone");
-
-      if (
-        savedPhone &&
-        !savedPhone.includes("971 50 123 4567") &&
-        !savedPhone.includes("98765 43210") &&
-        !savedPhone.includes("9876543210")
-      ) {
-        setAdminPhone(savedPhone);
-      } else {
-        setAdminPhone("+91 95104 48090");
-        localStorage.setItem("dubai_boutique_admin_phone", "+91 95104 48090");
-        localStorage.setItem("admin_phone", "+91 95104 48090");
-      }
-    }
+    fetch("/api/admin-profile")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.admin) {
+          if (data.admin.name) setAdminName(data.admin.name);
+          if (data.admin.phone) setAdminPhone(data.admin.phone);
+        }
+      })
+      .catch(() => {
+        if (typeof window !== "undefined") {
+          const savedName = localStorage.getItem("dubai_boutique_admin_name");
+          if (savedName) setAdminName(savedName);
+          const savedPhone = localStorage.getItem("dubai_boutique_admin_phone");
+          if (savedPhone) setAdminPhone(savedPhone);
+        }
+      });
   }, []);
 
   const getInitials = (name: string) => {
@@ -96,7 +81,7 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
     setTimeout(() => setToastMsg(null), 3000);
   };
 
-  const handleSaveProfileSecurity = (e: React.FormEvent) => {
+  const handleSaveProfileSecurity = async (e: React.FormEvent) => {
     e.preventDefault();
     if (newPassword && newPassword !== confirmPassword) {
       showToast("Error: New passwords do not match!");
@@ -113,11 +98,26 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
       localStorage.setItem("dubai_boutique_admin_phone", adminPhone);
     }
 
+    try {
+      await fetch("/api/admin-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: adminName,
+          phone: adminPhone,
+          currentPassword,
+          newPassword,
+        }),
+      });
+    } catch (err) {
+      console.error("Error saving admin profile to Firestore:", err);
+    }
+
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setIsProfileModalOpen(false);
-    showToast("Admin profile details updated successfully!");
+    showToast("Admin profile details updated in Firestore successfully!");
   };
 
   // Close menus when clicking outside
