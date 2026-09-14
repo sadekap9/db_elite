@@ -24,9 +24,10 @@ interface HeaderProps {
   onSearchChange?: (val: string) => void;
   isSidebarOpen?: boolean;
   onToggleSidebar?: () => void;
+  hideBanner?: boolean;
 }
 
-export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps) {
+export default function Header({ onSearchChange, onToggleSidebar, hideBanner = false }: HeaderProps) {
   const [isAdminMenuOpen, setIsAdminMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileModalOpen, setIsProfileModalOpen] = useState(false);
@@ -34,6 +35,7 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
 
   // Admin Profile & Security State
   const [adminName, setAdminName] = useState("Siddiqa Parveen");
+  const [adminPhone, setAdminPhone] = useState("+91 95104 48090");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -43,11 +45,38 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
   const notifRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  // Load saved admin name from localStorage
+  // Load saved admin details from localStorage
   useEffect(() => {
     if (typeof window !== "undefined") {
       const savedName = localStorage.getItem("dubai_boutique_admin_name");
-      if (savedName) setAdminName(savedName);
+      if (
+        savedName &&
+        savedName !== "Dubai Boutique Admin" &&
+        savedName !== "Dubai's Boutique" &&
+        !savedName.toLowerCase().includes("dubai's boutique")
+      ) {
+        setAdminName(savedName);
+      } else {
+        setAdminName("Siddiqa Parveen");
+        localStorage.setItem("dubai_boutique_admin_name", "Siddiqa Parveen");
+      }
+
+      const savedPhone =
+        localStorage.getItem("dubai_boutique_admin_phone") ||
+        localStorage.getItem("admin_phone");
+
+      if (
+        savedPhone &&
+        !savedPhone.includes("971 50 123 4567") &&
+        !savedPhone.includes("98765 43210") &&
+        !savedPhone.includes("9876543210")
+      ) {
+        setAdminPhone(savedPhone);
+      } else {
+        setAdminPhone("+91 95104 48090");
+        localStorage.setItem("dubai_boutique_admin_phone", "+91 95104 48090");
+        localStorage.setItem("admin_phone", "+91 95104 48090");
+      }
     }
   }, []);
 
@@ -56,7 +85,7 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
     if (parts.length >= 2 && parts[0] && parts[1]) {
       return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
     }
-    return name.slice(0, 2).toUpperCase() || "SP";
+    return name.slice(0, 2).toUpperCase() || "DB";
   };
 
   const adminInitials = getInitials(adminName);
@@ -81,13 +110,14 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
 
     if (typeof window !== "undefined") {
       localStorage.setItem("dubai_boutique_admin_name", adminName);
+      localStorage.setItem("dubai_boutique_admin_phone", adminPhone);
     }
 
     setCurrentPassword("");
     setNewPassword("");
     setConfirmPassword("");
     setIsProfileModalOpen(false);
-    showToast("Admin profile & name updated successfully!");
+    showToast("Admin profile details updated successfully!");
   };
 
   // Close menus when clicking outside
@@ -230,11 +260,11 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
                 }}
                 className="flex items-center gap-2 pl-1.5 py-0.5 pr-2.5 rounded-full bg-white border border-[#EBDDEE] shadow-2xs cursor-pointer hover:shadow-xs hover:border-[#682A6E]/40 transition-all select-none"
               >
-                <div className="w-7 h-7 rounded-full bg-[#3D1A40] text-[#F3D5FA] font-bold text-xs flex items-center justify-center shadow-inner">
-                  {adminInitials}
+                <div className="w-7 h-7 rounded-full bg-[#3D1A40] text-[#F3D5FA] font-bold text-xs flex items-center justify-center shadow-inner overflow-hidden shrink-0 border border-[#F5CC96]/40">
+                  <img src="/db_logo.jpeg" alt="Dubai's Boutique Logo" className="w-full h-full object-cover" />
                 </div>
                 <div className="text-left leading-none">
-                  <span className="text-xs font-bold text-[#2D142E] block">Hi, {firstName}!</span>
+                  <span className="text-xs font-bold text-[#2D142E] block">Hi, {adminName}!</span>
                   <span className="text-[9px] text-[#8C718F] font-medium block mt-0.5">Owner</span>
                 </div>
                 <ChevronDown
@@ -249,8 +279,8 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
                 <div className="absolute right-0 top-12 z-[100] w-76 bg-white rounded-3xl p-4 shadow-2xl border border-[#E4CEE6] animate-in fade-in slide-in-from-top-2 duration-200 text-xs space-y-4">
                   {/* Admin Profile Header */}
                   <div className="flex items-center gap-3 bg-gradient-to-br from-[#FAF3FA] to-[#F5EAF7] p-3.5 rounded-2xl border border-[#EEDBF0]">
-                    <div className="w-11 h-11 rounded-full bg-[#2D142E] text-[#F5CC96] font-bold text-sm flex items-center justify-center border-2 border-[#D9BEDC] shadow-md shrink-0">
-                      {adminInitials}
+                    <div className="w-11 h-11 rounded-full bg-[#2D142E] text-[#F5CC96] font-bold text-sm flex items-center justify-center border-2 border-[#D9BEDC] shadow-md shrink-0 overflow-hidden">
+                      <img src="/db_logo.jpeg" alt="Dubai's Boutique Logo" className="w-full h-full object-cover" />
                     </div>
                     <div className="space-y-0.5 min-w-0">
                       <div className="flex items-center gap-1.5">
@@ -307,31 +337,33 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
         </div>
 
         {/* Content Row: Greeting & Center Quote */}
-        <div className="relative z-10 pt-2 flex flex-col md:flex-row items-center justify-between gap-6">
-          {/* Left Side: Greeting */}
-          <div className="space-y-1.5 max-w-sm md:max-w-md">
-            <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#2D142E] tracking-tight flex items-center gap-2">
-              <span>Good Morning, {firstName}!</span>
-              <span className="text-[#A567A8] font-normal text-xl">♡</span>
-            </h1>
-            <p className="text-xs md:text-sm text-[#6E4F71] font-medium">
-              Let&apos;s make more women feel special today.
-            </p>
-          </div>
+        {!hideBanner && (
+          <div className="relative z-10 pt-2 flex flex-col md:flex-row items-center justify-between gap-6">
+            {/* Left Side: Greeting */}
+            <div className="space-y-1.5 max-w-lg md:max-w-xl">
+              <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#2D142E] tracking-tight flex items-center gap-2 whitespace-nowrap">
+                <span>Good Morning, {adminName}!</span>
+                <span className="text-[#A567A8] font-normal text-xl">♡</span>
+              </h1>
+              <p className="text-xs md:text-sm text-[#6E4F71] font-medium">
+                Let&apos;s make more women feel special today.
+              </p>
+            </div>
 
-          {/* Center Quote */}
-          <div className="hidden lg:flex flex-col items-center justify-center text-center space-y-1 px-8 border-x border-[#E9D5EC]">
-            <p className="font-serif italic text-sm md:text-base text-[#4D2051] leading-snug">
-              &ldquo;Fashion creates confident women.&rdquo;
-            </p>
-            <span className="text-[10px] font-bold tracking-[0.2em] text-[#9A739D] uppercase">
-              — DUBAI&apos;S BOUTIQUE
-            </span>
-          </div>
+            {/* Center Quote */}
+            <div className="hidden lg:flex flex-col items-center justify-center text-center space-y-1 px-8 border-x border-[#E9D5EC]">
+              <p className="font-serif italic text-sm md:text-base text-[#4D2051] leading-snug">
+                &ldquo;House of Brands&rdquo;
+              </p>
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#9A739D] uppercase">
+                — DUBAI&apos;S BOUTIQUE
+              </span>
+            </div>
 
-          {/* Right Spacer to preserve layout over woman background */}
-          <div className="hidden md:block w-36 lg:w-48 shrink-0" />
-        </div>
+            {/* Right Spacer to preserve layout over woman background */}
+            <div className="hidden md:block w-36 lg:w-48 shrink-0" />
+          </div>
+        )}
       </div>
 
       {/* EDIT ADMIN PROFILE & CHANGE PASSWORD MODAL */}
@@ -391,15 +423,17 @@ export default function Header({ onSearchChange, onToggleSidebar }: HeaderProps)
 
                 <div>
                   <label className="block text-[11px] font-semibold text-[#6E4F71] mb-1">
-                    Phone Number
+                    Phone Number (WhatsApp / Contact)
                   </label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C718F]" />
                     <input
                       type="text"
-                      disabled
-                      value="+91 98765 43210"
-                      className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-[#F0E4F2] border border-[#D9C4DC] text-[#7A617D] font-mono cursor-not-allowed font-semibold"
+                      required
+                      value={adminPhone}
+                      onChange={(e) => setAdminPhone(e.target.value)}
+                      placeholder="Enter Admin Phone Number"
+                      className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-white border border-[#E3D0E5] text-[#2D142E] font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-[#682A6E]/30"
                     />
                   </div>
                 </div>

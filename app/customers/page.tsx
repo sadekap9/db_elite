@@ -44,6 +44,7 @@ interface PurchaseItem {
   date: string;
   amount: string;
   status: string;
+  qty?: number;
 }
 
 const renderStatusPill = (statusText: string = "Gold") => {
@@ -116,6 +117,7 @@ interface APICustomer {
     collection?: string;
     purchaseDate?: string;
     amountINR?: string;
+    qty?: number;
   }[];
 }
 
@@ -134,7 +136,7 @@ export default function CustomersPage() {
   }, []);
 
   React.useEffect(() => {
-    fetch("/api/customers")
+    fetch("/api/customers", { cache: "no-store" })
       .then((res) => res.json())
       .then((data) => {
         if (data.success && data.customers) {
@@ -154,9 +156,10 @@ export default function CustomersPage() {
                 id: p.id,
                 name: p.dressName || "Dress Purchase",
                 collection: p.collection || "Royal Collection",
-                date: p.purchaseDate || "2026-09-08",
+                date: p.purchaseDate || new Date().toISOString().split("T")[0],
                 amount: p.amountINR || "₹0",
                 status: "Delivered",
+                qty: Number(p.qty) || 1,
               }));
             }
 
@@ -195,14 +198,110 @@ export default function CustomersPage() {
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [quickActionType, setQuickActionType] = useState<string | null>(null);
 
-  // Edit Customer Modal State
+  // Edit Customer & Quick Add Dress State
   const [editingCustomer, setEditingCustomer] = useState<ExtendedCustomer | null>(null);
   const [editingDressItem, setEditingDressItem] = useState<{ customerId: number; item: PurchaseItem } | null>(null);
+  const [quickAddDressCust, setQuickAddDressCust] = useState<ExtendedCustomer | null>(null);
+  const [quickDressName, setQuickDressName] = useState("Royal Collection Abaya");
+  const [quickDressQty, setQuickDressQty] = useState(1);
+  const [quickDressAmount, setQuickDressAmount] = useState("₹25,000");
   const [toastMsg, setToastMsg] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3500);
+  };
+
+  const handleQuickAddDress = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!quickAddDressCust) return;
+
+    const addedQty = Number(quickDressQty) || 1;
+    const amountStr = quickDressAmount || "₹25,000";
+    const dressStr = quickDressName || "Royal Collection Abaya";
+
+    try {
+      await fetch("/api/purchases", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customerId: quickAddDressCust.id,
+          dressName: dressStr,
+          qty: addedQty,
+          amountINR: amountStr,
+          purchaseDate: new Date().toISOString().split("T")[0],
+        }),
+      });
+    } catch (err) {
+      console.error("Error calling purchases API:", err);
+    }
+
+    setCustomers((prev) =>
+      prev.map((c) => {
+        if (String(c.id) === String(quickAddDressCust.id)) {
+          const newCount = c.dressesCount + addedQty;
+          const newStatus =
+            newCount >= 12
+              ? "Elite"
+              : newCount === 11
+              ? "Almost Elite"
+              : newCount >= 8
+              ? "Gold"
+              : newCount >= 4
+              ? "Silver"
+              : "Regular";
+          return {
+            ...c,
+            dressesCount: newCount,
+            totalSpentDresses: newCount,
+            statusBadge: newStatus,
+            statusText: newStatus,
+            tier: newCount >= 12 ? "Elite Circle" : newCount === 11 ? "Almost Elite" : "Loyal Client",
+          };
+        }
+        return c;
+      })
+    );
+
+    const newPurchaseItem: PurchaseItem = {
+      id: `pur_${Date.now()}`,
+      name: dressStr,
+      collection: "Royal Atelier Collection",
+      date: new Date().toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" }),
+      amount: amountStr,
+      status: "Delivered",
+      qty: addedQty,
+    };
+
+    setCustomerPurchases((prev) => ({
+      ...prev,
+      [quickAddDressCust.id]: [newPurchaseItem, ...(prev[quickAddDressCust.id] || [])],
+    }));
+
+    if (activeCustomerDrawer && String(activeCustomerDrawer.id) === String(quickAddDressCust.id)) {
+      const newCount = activeCustomerDrawer.dressesCount + addedQty;
+      const newStatus =
+        newCount >= 12
+          ? "Elite"
+          : newCount === 11
+          ? "Almost Elite"
+          : newCount >= 8
+          ? "Gold"
+          : newCount >= 4
+          ? "Silver"
+          : "Regular";
+      setActiveCustomerDrawer({
+        ...activeCustomerDrawer,
+        dressesCount: newCount,
+        totalSpentDresses: newCount,
+        statusBadge: newStatus,
+        statusText: newStatus,
+        tier: newCount >= 12 ? "Elite Circle" : newCount === 11 ? "Almost Elite" : "Loyal Client",
+      });
+    }
+
+    showToast(`Added ${addedQty} dress(es) to ${quickAddDressCust.name}'s milestone count!`);
+    setQuickAddDressCust(null);
   };
 
   const handleSaveEditDressItem = (e: React.FormEvent) => {
@@ -374,6 +473,7 @@ export default function CustomersPage() {
           onSearchChange={setSearchQuery}
           isSidebarOpen={isSidebarOpen}
           onToggleSidebar={() => setIsSidebarOpen((prev) => !prev)}
+          hideBanner={true}
         />
 
         {/* Customer Directory Header Banner */}
@@ -521,12 +621,24 @@ export default function CustomersPage() {
                       {/* Actions */}
                       <td className="py-3 px-3 text-right" onClick={(e) => e.stopPropagation()}>
                         <div className="flex items-center justify-end gap-1.5">
+                          {/* Quick Add Dress */}
+                          <button
+                            onClick={() => {
+                              setQuickAddDressCust(cust);
+                            }}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#FAF3FA] hover:bg-[#F3EAF4] text-[#682A6E] text-[10px] font-bold border border-[#E4CEE6] transition-all shadow-2xs cursor-pointer"
+                            title="Add Dress to Client"
+                          >
+                            <Plus className="w-3 h-3 text-[#682A6E]" />
+                            <span>+ Dress</span>
+                          </button>
+
                           <button
                             onClick={() => {
                               setMessageCustomer(cust);
                               setIsMessageModalOpen(true);
                             }}
-                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-[10px] font-semibold transition-all shadow-2xs"
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-[10px] font-semibold transition-all shadow-2xs cursor-pointer"
                             title="Send WhatsApp Message"
                           >
                             <MessageCircle className="w-3 h-3 text-[#25D366] fill-[#25D366]/20 stroke-[2.5]" />
@@ -585,6 +697,15 @@ export default function CustomersPage() {
               </button>
 
               <div className="flex items-center gap-3">
+                {/* Quick Add Dress */}
+                <button
+                  onClick={() => setQuickAddDressCust(activeCustomerDrawer)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                >
+                  <Plus className="w-3.5 h-3.5 text-[#F5CC96]" />
+                  <span>+ Add Dress</span>
+                </button>
+
                 {/* Edit Button */}
                 <button
                   onClick={() => setEditingCustomer(activeCustomerDrawer)}
@@ -741,6 +862,7 @@ export default function CustomersPage() {
                     <thead>
                       <tr className="border-b border-[#F0E2F1] text-[#937896] font-semibold text-[11px]">
                         <th className="py-2.5 px-3">Item / Collection</th>
+                        <th className="py-2.5 px-3">Qty</th>
                         <th className="py-2.5 px-3">Acquisition Date</th>
                         <th className="py-2.5 px-3">Status</th>
                         <th className="py-2.5 px-3">Amount</th>
@@ -750,7 +872,7 @@ export default function CustomersPage() {
                     <tbody className="divide-y divide-[#F6EDF7]">
                       {(customerPurchases[activeCustomerDrawer.id] || []).length === 0 ? (
                         <tr>
-                          <td colSpan={5} className="py-4 text-center text-xs text-[#8C718F]">
+                          <td colSpan={6} className="py-4 text-center text-xs text-[#8C718F]">
                             No dress purchases recorded yet.
                           </td>
                         </tr>
@@ -761,6 +883,11 @@ export default function CustomersPage() {
                               <span className="font-bold text-[#2D142E] block">{item.name}</span>
                               <span className="text-[10px] text-[#86378D] font-medium block">
                                 {item.collection}
+                              </span>
+                            </td>
+                            <td className="py-3 px-3">
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-[#F4EBF5] text-[#58245D] border border-[#E4CEE6] font-mono">
+                                {item.qty || 1} Pcs
                               </span>
                             </td>
                             <td className="py-3 px-3 text-[#7C637E] font-medium">{item.date}</td>
@@ -1011,7 +1138,23 @@ export default function CustomersPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-3 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#2D142E]">Qty (Pcs)</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={editingDressItem.item.qty || 1}
+                    onChange={(e) =>
+                      setEditingDressItem({
+                        ...editingDressItem,
+                        item: { ...editingDressItem.item, qty: Number(e.target.value) || 1 },
+                      })
+                    }
+                    className="w-full px-3 py-2 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40 font-mono font-bold"
+                  />
+                </div>
+
                 <div className="space-y-1">
                   <label className="font-semibold text-[#2D142E]">Acquisition Date</label>
                   <input
@@ -1075,6 +1218,95 @@ export default function CustomersPage() {
                 >
                   <Check className="w-3.5 h-3.5 text-[#25D366]" />
                   <span>Update Dress</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* QUICK ADD DRESS MODAL FOR EXISTING CLIENT */}
+      {quickAddDressCust && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D0A1F]/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-[#E4CEE6] space-y-5 relative">
+            <div className="flex items-center justify-between border-b border-[#F2E4F3] pb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-[#F4EBF5] flex items-center justify-center text-[#58245D]">
+                  <ShoppingBag className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-serif text-lg font-bold text-[#2D142E]">
+                    Add Dress Purchase
+                  </h3>
+                  <p className="text-xs text-[#866B88]">Existing Client: <span className="font-bold text-[#58245D]">{quickAddDressCust.name}</span></p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setQuickAddDressCust(null)}
+                className="p-2 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleQuickAddDress} className="space-y-4 text-xs">
+              <div className="space-y-1">
+                <label className="font-semibold text-[#2D142E]">Dress / Collection Name</label>
+                <input
+                  required
+                  type="text"
+                  placeholder="e.g. Royal Silk Abaya - Emerald"
+                  value={quickDressName}
+                  onChange={(e) => setQuickDressName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#2D142E]">Quantity to Add</label>
+                  <input
+                    type="number"
+                    min={1}
+                    value={quickDressQty}
+                    onChange={(e) => setQuickDressQty(Number(e.target.value))}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40 font-bold font-mono"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="font-semibold text-[#2D142E]">Amount (INR)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. ₹25,000"
+                    value={quickDressAmount}
+                    onChange={(e) => setQuickDressAmount(e.target.value)}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40 font-mono"
+                  />
+                </div>
+              </div>
+
+              <div className="bg-[#FAF3FA] p-3 rounded-2xl border border-[#EEDBF0] text-[11px] text-[#682A6E] font-medium flex items-center justify-between">
+                <span>Current Progress: <strong>{quickAddDressCust.dressesCount}/{quickAddDressCust.totalTarget}</strong></span>
+                <span>New Progress: <strong>{quickAddDressCust.dressesCount + Number(quickDressQty || 1)}/{quickAddDressCust.totalTarget}</strong></span>
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setQuickAddDressCust(null)}
+                  className="px-4 py-2 rounded-full bg-[#F3EBF4] text-[#58245D] text-xs font-semibold cursor-pointer"
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="submit"
+                  className="px-5 py-2 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-xs font-bold shadow-md cursor-pointer inline-flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5 text-[#25D366]" />
+                  <span>Confirm & Add Dress</span>
                 </button>
               </div>
             </form>

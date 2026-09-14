@@ -196,9 +196,10 @@ export default function MessageTemplatesPage() {
     const tpl = templates.find((t) => t.title === selectedTemplateTitle) || templates[2] || templates[0];
     const remaining = selectedCustomer.totalTarget - selectedCustomer.dressesCount;
 
-    const text = tpl.content
+    const text = (tpl?.content || "")
       .replace(/{{customer_name}}/g, selectedCustomer.name)
       .replace(/{{purchase_count}}/g, `${selectedCustomer.dressesCount}`)
+      .replace(/{{target}}/g, `${selectedCustomer.totalTarget || 12}`)
       .replace(/{{remaining}}/g, `${remaining}`)
       .replace(/{{last_purchase_date}}/g, "3 Sep 2026");
 
@@ -501,21 +502,13 @@ export default function MessageTemplatesPage() {
 
                   {/* Customer Card Details Box */}
                   <div className="bg-[#FAF3FA] p-3 rounded-2xl border border-[#EEDBF0] flex items-center justify-between gap-3 text-xs mt-2">
-                    <div className="flex items-center gap-2.5">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={selectedCustomer.avatarUrl}
-                        alt={selectedCustomer.name}
-                        className="w-9 h-9 rounded-full object-cover border border-[#D9BEDC]"
-                      />
-                      <div>
-                        <span className="font-bold text-[#2D142E] block">
-                          {selectedCustomer.name}
-                        </span>
-                        <span className="text-[10px] text-[#7E6380] font-mono">
-                          {selectedCustomer.phone}
-                        </span>
-                      </div>
+                    <div>
+                      <span className="font-bold text-[#2D142E] block">
+                        {selectedCustomer.name}
+                      </span>
+                      <span className="text-[10px] text-[#7E6380] font-mono">
+                        {selectedCustomer.phone}
+                      </span>
                     </div>
 
                     <div className="text-right space-y-1">
@@ -566,9 +559,7 @@ export default function MessageTemplatesPage() {
                   onClick={() =>
                     handleCopy(
                       generatedText ||
-                        `Hi ${selectedCustomer.name}! 👋 You currently have ${selectedCustomer.dressesCount} purchases with Dubai's Boutique — ✨ just ${
-                          selectedCustomer.totalTarget - selectedCustomer.dressesCount
-                        } more dress to complete your Elite journey! ✨ 12 dresses. One year. One Elite circle. 👑`
+                        `Hi ${selectedCustomer.name} 🤍\n\nYou are currently at ${selectedCustomer.dressesCount}/${selectedCustomer.totalTarget || 12} purchases toward Dubai's Boutique Elite. 👑\n\nKeep shopping with us to unlock exclusive early access, special privileges and rewards. ✨`
                     )
                   }
                   className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white hover:bg-[#F3EAF4] text-[#682A6E] text-[11px] font-semibold border border-[#E4CEE6] transition-colors cursor-pointer"
@@ -585,14 +576,13 @@ export default function MessageTemplatesPage() {
                     <p className="whitespace-pre-line">{generatedText}</p>
                   ) : (
                     <>
-                      <p>Hi {selectedCustomer.name}! 👋</p>
-                      <p>
-                        You currently have {selectedCustomer.dressesCount} purchases with Dubai&apos;s Boutique — ✨
+                      <p>Hi {selectedCustomer.name} 🤍</p>
+                      <p className="pt-1">
+                        You are currently at {selectedCustomer.dressesCount}/{selectedCustomer.totalTarget || 12} purchases toward Dubai&apos;s Boutique Elite. 👑
                       </p>
-                      <p>
-                        just {selectedCustomer.totalTarget - selectedCustomer.dressesCount} more dress to complete your Elite journey! ✨
+                      <p className="pt-1">
+                        Keep shopping with us to unlock exclusive early access, special privileges and rewards. ✨
                       </p>
-                      <p className="pt-1">12 dresses. One year. One Elite circle. 👑</p>
                     </>
                   )}
                 </div>

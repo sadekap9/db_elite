@@ -23,7 +23,7 @@ export default function QuickActionModal({
   const [custPhone, setCustPhone] = useState("");
   const [custQty, setCustQty] = useState<number>(1);
   const [custAmount, setCustAmount] = useState("");
-  const [custDate, setCustDate] = useState("2026-09-08");
+  const [custDate, setCustDate] = useState<string>(() => new Date().toISOString().split("T")[0]);
 
   // Purchase specific form inputs
   const [selectedCustId, setSelectedCustId] = useState("");
@@ -69,6 +69,12 @@ export default function QuickActionModal({
 
     try {
       if (actionType === "add_customer") {
+        const cleanPhone = custPhone.replace(/[^0-9]/g, "");
+        if (cleanPhone.length !== 10) {
+          setErrorMsg("Phone number must be exactly 10 digits.");
+          return;
+        }
+
         const qtyNum = Number(custQty) || 1;
         const status =
           qtyNum >= 12
@@ -214,10 +220,14 @@ export default function QuickActionModal({
                   <input
                     required
                     type="text"
-                    placeholder="e.g. +91 98765 43210"
+                    maxLength={10}
+                    placeholder="e.g. 9999999999"
                     value={custPhone}
-                    onChange={(e) => setCustPhone(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] text-xs focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40"
+                    onChange={(e) => {
+                      const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 10);
+                      setCustPhone(val);
+                    }}
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-[#FAF6FA] border border-[#E3D0E5] text-xs focus:outline-none focus:ring-2 focus:ring-[#682A6E]/40 font-mono tracking-wide"
                   />
                 </div>
                 <div className="space-y-1">

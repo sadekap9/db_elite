@@ -15,7 +15,7 @@ export async function GET() {
   try {
     const fetchCustomers = adminDb.collection("customers").get();
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 1000)
+      setTimeout(() => reject(new Error("Timeout")), 6000)
     );
 
     const customersSnap = (await Promise.race([fetchCustomers, timeout])) as FirestoreSnap;

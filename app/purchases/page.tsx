@@ -62,7 +62,7 @@ export default function PurchasesPage() {
                   phone: c.phone,
                   dressName: p.dressName || "Dress Purchase",
                   collection: p.collection || "Royal Collection",
-                  date: p.purchaseDate || "2026-09-08",
+                  date: p.purchaseDate || new Date().toISOString().split("T")[0],
                   milestoneImpact: `+${p.qty || 1} Dress (${c.dresses || 1}/12 Total)`,
                   status: "Delivered",
                 });

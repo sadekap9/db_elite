@@ -68,36 +68,7 @@ const initialData: StoreData = {
   customers: [],
   purchases: [],
   templates: [],
-  rules: [
-    {
-      id: "1",
-      startDate: "2024-01-01",
-      endDate: "2024-06-30",
-      durationMonths: 6,
-      targetDresses: 6,
-      tierName: "Gold VIP Member",
-      description: "Buy 6 dresses between 2024-01-01 and 2024-06-30 (6 Months) to unlock Gold VIP Member status.",
-      ruleName: "Mid-Year Gold Progress",
-      dressesRequired: 6,
-      amountRequiredINR: "₹1,00,000",
-      periodDays: 180,
-      rewardBenefit: "15% Exclusive Discount",
-    },
-    {
-      id: "2",
-      startDate: "2024-01-01",
-      endDate: "2024-12-31",
-      durationMonths: 12,
-      targetDresses: 12,
-      tierName: "Elite Circle VIP",
-      description: "Buy 12 dresses between 2024-01-01 and 2024-12-31 (12 Months) to unlock Elite Circle VIP status.",
-      ruleName: "12-Dress Annual Elite Target",
-      dressesRequired: 12,
-      amountRequiredINR: "₹2,00,000",
-      periodDays: 365,
-      rewardBenefit: "20% Exclusive Discount & Private Atelier Fitting",
-    },
-  ],
+  rules: [],
 };
 
 function normPhone(p: string): string {
@@ -313,7 +284,41 @@ export const localStore = {
     return newPurchase;
   },
 
-  getTemplates: () => readStore().templates,
+  getTemplates: () => {
+    const store = readStore();
+    if (!store.templates || store.templates.length === 0) {
+      return [
+        {
+          id: "1",
+          title: "Dubai Elite Progress Update",
+          templateName: "Dubai Elite Progress Update",
+          category: "Loyalty Progress",
+          targetAudience: "All Members",
+          messageText: "Hi {{customer_name}} 🤍\n\nYou are currently at {{purchase_count}}/{{target}} purchases toward Dubai's Boutique Elite. 👑\n\nKeep shopping with us to unlock exclusive early access, special privileges and rewards. ✨",
+          message_body: "Hi {{customer_name}} 🤍\n\nYou are currently at {{purchase_count}}/{{target}} purchases toward Dubai's Boutique Elite. 👑\n\nKeep shopping with us to unlock exclusive early access, special privileges and rewards. ✨",
+        },
+        {
+          id: "2",
+          title: "Elite Membership Details",
+          templateName: "Elite Membership Details",
+          category: "VIP Privileges",
+          targetAudience: "VIP Members",
+          messageText: "👑 Welcome to Dubai's Boutique Elite! Enjoy private fittings, early releases & VIP rewards.",
+          message_body: "👑 Welcome to Dubai's Boutique Elite! Enjoy private fittings, early releases & VIP rewards.",
+        },
+        {
+          id: "3",
+          title: "Elite Unlocked",
+          templateName: "Elite Unlocked",
+          category: "Reward",
+          targetAudience: "Elite Achievers",
+          messageText: "Congratulations {{customer_name}}! 🎁 You have officially unlocked ELITE CIRCLE VIP status. Thank you for being family! ♥",
+          message_body: "Congratulations {{customer_name}}! 🎁 You have officially unlocked ELITE CIRCLE VIP status. Thank you for being family! ♥",
+        },
+      ];
+    }
+    return store.templates;
+  },
 
   addTemplate: (t: Partial<TemplateRecord> & { templateName?: string; messageText?: string }) => {
     const store = readStore();

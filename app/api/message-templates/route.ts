@@ -15,7 +15,7 @@ export async function GET() {
   try {
     const fetchTemplates = adminDb.collection("message_templates").get();
     const timeout = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error("Timeout")), 1000)
+      setTimeout(() => reject(new Error("Timeout")), 6000)
     );
 
     const snap = (await Promise.race([fetchTemplates, timeout])) as FirestoreSnap;

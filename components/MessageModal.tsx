@@ -14,26 +14,30 @@ interface MessageModalProps {
 
 function getDefaultMessage(customer?: CustomerData | null, template?: TemplateItem | null) {
   if (customer) {
-    if (template) {
-      return `Dear ${customer.name},\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique`;
+    if (template && template.defaultText) {
+      const remaining = Math.max(0, (customer.totalTarget || 12) - customer.dressesCount);
+      return template.defaultText
+        .replace(/{{customer_name}}/g, customer.name)
+        .replace(/{{purchase_count}}/g, `${customer.dressesCount}`)
+        .replace(/{{target}}/g, `${customer.totalTarget || 12}`)
+        .replace(/{{remaining}}/g, `${remaining}`);
     }
     const dresses = customer.dressesCount || 0;
     const target = customer.totalTarget || 12;
-    const remaining = target - dresses;
 
-    let progressText = "";
     if (dresses >= target) {
-      progressText = `Congratulations! You have unlocked full Elite Circle privileges!`;
-    } else if (remaining === 1) {
-      progressText = `You are just 1 dress away from unlocking full Elite Circle privileges!`;
-    } else {
-      progressText = `You are just ${remaining} dresses away from unlocking full Elite Circle privileges!`;
+      return `Hi ${customer.name} 🤍\n\nCongratulations! 🎉 You have completed ${dresses}/${target} purchases and unlocked full Dubai's Boutique Elite VIP status. 👑\n\nThank you for being part of our exclusive circle. Enjoy your early access, private fitting privileges and special rewards. ✨`;
     }
 
-    return `Dear ${customer.name},\n\nHope you are having a wonderful day! You have purchased ${dresses} out of ${target} dresses this year. ${progressText}\n\nWarm regards,\nDubai's Boutique`;
+    const remaining = target - dresses;
+    if (remaining === 1) {
+      return `Hi ${customer.name} 🤍\n\nYou are currently at ${dresses}/${target} purchases toward Dubai's Boutique Elite. 👑\n\nJust 1 more dress to complete your Elite journey! Keep shopping with us to unlock exclusive early access, special privileges and rewards. ✨`;
+    }
+
+    return `Hi ${customer.name} 🤍\n\nYou are currently at ${dresses}/${target} purchases toward Dubai's Boutique Elite. 👑\n\nKeep shopping with us to unlock exclusive early access, special privileges and rewards. ✨`;
   }
   if (template) {
-    return `Dear Valued Client,\n\n${template.defaultText}\n\nWarm regards,\nDubai's Boutique`;
+    return template.defaultText || "";
   }
   return "";
 }
@@ -102,22 +106,14 @@ export default function MessageModal({
         {/* Details Card */}
         {customer && (
           <div className="bg-[#FAF3FA] rounded-2xl p-3.5 border border-[#EEDBF0] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={customer.avatarUrl}
-                alt={customer.name}
-                className="w-10 h-10 rounded-full object-cover border border-[#D9BEDC]"
-              />
-              <div>
-                <span className="font-bold text-[#2D142E] block">{customer.name}</span>
-                <span className="text-[11px] text-[#7E6380]">
-                  Purchased: {customer.dressesCount}/{customer.totalTarget} dresses ({customer.statusText})
-                </span>
-              </div>
+            <div>
+              <span className="font-bold text-[#2D142E] block text-sm">{customer.name}</span>
+              <span className="text-[11px] text-[#7E6380]">
+                Purchased: {customer.dressesCount}/{customer.totalTarget} dresses ({customer.statusText})
+              </span>
             </div>
 
-            <span className="px-2.5 py-1 rounded-full text-[10px] font-bold bg-[#2D142E] text-white">
+            <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#2D142E] text-white">
               {customer.category}
             </span>
           </div>

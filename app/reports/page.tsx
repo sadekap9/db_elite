@@ -29,25 +29,53 @@ export default function ReportsPage() {
   }, []);
 
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [monthlyAcquisitions, setMonthlyAcquisitions] = useState([
+    { month: "Jan", count: 0 },
+    { month: "Feb", count: 0 },
+    { month: "Mar", count: 0 },
+    { month: "Apr", count: 0 },
+    { month: "May", count: 0 },
+    { month: "Jun", count: 0 },
+    { month: "Jul", count: 0 },
+    { month: "Aug", count: 0 },
+    { month: "Sep", count: 0 },
+  ]);
+
+  React.useEffect(() => {
+    fetch("/api/customers")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.success && data.customers) {
+          const counts: { [key: number]: number } = {};
+          data.customers.forEach((c: any) => {
+            (c.purchases || []).forEach((p: any) => {
+              if (p.purchaseDate) {
+                const date = new Date(p.purchaseDate);
+                const month = date.getMonth();
+                if (month >= 0 && month <= 8) {
+                  counts[month] = (counts[month] || 0) + (Number(p.qty) || 1);
+                }
+              }
+            });
+          });
+          const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep"];
+          setMonthlyAcquisitions(
+            monthNames.map((m, idx) => ({
+              month: m,
+              count: counts[idx] || 0,
+            }))
+          );
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   const showToast = (msg: string) => {
     setToastMsg(msg);
     setTimeout(() => setToastMsg(null), 3000);
   };
 
-  const monthlyAcquisitions = [
-    { month: "Jan", count: 42 },
-    { month: "Feb", count: 38 },
-    { month: "Mar", count: 56 },
-    { month: "Apr", count: 64 },
-    { month: "May", count: 72 },
-    { month: "Jun", count: 58 },
-    { month: "Jul", count: 68 },
-    { month: "Aug", count: 81 },
-    { month: "Sep", count: 33 }, // Current month partial
-  ];
-
-  const maxAcquisition = Math.max(...monthlyAcquisitions.map((m) => m.count));
+  const maxAcquisition = Math.max(...monthlyAcquisitions.map((m) => m.count), 1);
 
   return (
     <div className="flex min-h-screen bg-[#FAF7F2] text-[#2D142E] font-sans antialiased selection:bg-[#EADBEE] selection:text-[#2D142E] relative">

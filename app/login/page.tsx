@@ -15,13 +15,22 @@ import {
 } from "lucide-react";
 
 export default function LoginPage() {
-  const [phone, setPhone] = useState("+91 98765 43210");
+  const [phone, setPhone] = useState("+91 95104 48090");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const router = useRouter();
+
+  React.useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedPhone = localStorage.getItem("dubai_boutique_admin_phone") || localStorage.getItem("admin_phone");
+      if (savedPhone && !savedPhone.includes("98765 43210") && !savedPhone.includes("971 50 123 4567")) {
+        setPhone(savedPhone);
+      }
+    }
+  }, []);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,7 +60,11 @@ export default function LoginPage() {
       if (data.success) {
         if (typeof window !== "undefined") {
           localStorage.setItem("dubai_boutique_admin_auth", "true");
-          localStorage.setItem("admin_phone", phone);
+          const finalPhone = data.admin?.phone || phone;
+          const finalName = data.admin?.name || "Dubai's Boutique Admin";
+          localStorage.setItem("admin_phone", finalPhone);
+          localStorage.setItem("dubai_boutique_admin_phone", finalPhone);
+          localStorage.setItem("dubai_boutique_admin_name", finalName);
         }
         router.push("/");
       } else {
@@ -60,6 +73,8 @@ export default function LoginPage() {
     } catch (err) {
       if (typeof window !== "undefined") {
         localStorage.setItem("dubai_boutique_admin_auth", "true");
+        localStorage.setItem("dubai_boutique_admin_phone", phone);
+        localStorage.setItem("admin_phone", phone);
       }
       router.push("/");
     } finally {
@@ -78,8 +93,8 @@ export default function LoginPage() {
       <div className="w-full max-w-md relative z-10">
         {/* Top Brand Emblem Card */}
         <div className="text-center space-y-3 mb-6">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#3A143C] to-[#5C2361] border border-[#F5CC96]/40 shadow-2xl relative">
-            <Crown className="w-8 h-8 text-[#F5CC96] animate-pulse" />
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-3xl bg-gradient-to-tr from-[#3A143C] to-[#5C2361] border border-[#F5CC96]/40 shadow-2xl relative overflow-hidden">
+            <img src="/db_logo.jpeg" alt="Dubai's Boutique Logo" className="w-full h-full object-cover" />
             <Sparkles className="w-4 h-4 text-[#F5CC96] absolute top-1 right-1" />
           </div>
 

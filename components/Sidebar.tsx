@@ -109,8 +109,8 @@ export default function Sidebar({
                   <PanelLeftClose className="w-4 h-4" />
                 </button>
 
-                <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#682A6E] to-[#9B45A3] flex items-center justify-center shadow-md mb-1 border border-[#B36CBB]/30">
-                  <Crown className="w-4 h-4 text-[#FAD59F]" />
+                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#682A6E] to-[#9B45A3] flex items-center justify-center shadow-md mb-1 border border-[#F5CC96]/40 overflow-hidden shrink-0">
+                  <img src="/db_logo.jpeg" alt="Dubai's Boutique Logo" className="w-full h-full object-cover" />
                 </div>
                 <h1 className="font-serif text-base tracking-wide font-bold text-[#FDF8FE] leading-tight">
                   Dubai&apos;s Boutique

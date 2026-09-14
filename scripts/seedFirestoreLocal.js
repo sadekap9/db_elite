@@ -18,9 +18,9 @@ async function seed() {
   console.log("Seeding Firestore collections...");
 
   // 1. Admins Table / Collection
-  await setDoc(doc(db, "admins", "+919876543210"), {
-    phone: "+919876543210",
-    password: "admin",
+  await setDoc(doc(db, "admins", "9510448090"), {
+    phone: "9510448090",
+    password: "Admin@123",
     name: "Siddiqa Parveen",
     createdAt: new Date().toISOString(),
   });
@@ -137,7 +137,7 @@ async function seed() {
 
   // 5. Message Templates Table / Collection
   const templates = [
-    { id: "1", title: "Elite Announcement", content: "✨ Something VERY exclusive is coming to Dubai's Boutique. ✨ Be ready for luxury." },
+    { id: "1", title: "Dubai Elite Progress Update", content: "Hi {{customer_name}} 🤍\n\nYou are currently at {{purchase_count}}/{{target}} purchases toward Dubai's Boutique Elite. 👑\n\nKeep shopping with us to unlock exclusive early access, special privileges and rewards. ✨" },
     { id: "2", title: "Elite Membership Details", content: "👑 Welcome to Dubai's Boutique Elite! Enjoy private fittings, early releases & VIP rewards." },
     { id: "3", title: "My Elite Status", content: "Hi {{customer_name}}! 👋 You currently have {{purchase_count}} purchases with Dubai's Boutique — ✨ just {{remaining}} more dress to complete your Elite journey! ✨ 12 dresses. One year. One Elite circle. 👑" },
     { id: "4", title: "Elite Unlocked", content: "Congratulations {{customer_name}}! 🎁 You have officially unlocked ELITE CIRCLE VIP status. Thank you for being family! ♥" },

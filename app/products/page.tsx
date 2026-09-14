@@ -35,92 +35,7 @@ interface DressProduct {
   topClient: string;
 }
 
-const dressInventory: DressProduct[] = [
-  {
-    id: "prod-1",
-    name: "Imperial Velvet Kaftan",
-    sku: "DB-KAF-001",
-    category: "Velvet Kaftans",
-    imageUrl:
-      "https://images.unsplash.com/photo-1566174053879-31528523f8ae?w=500&auto=format&fit=crop&q=80",
-    stockCount: 14,
-    acquisitionsCount: 48,
-    fabric: "Deep Plum Silk Velvet & Gold Thread Work",
-    milestonePoints: 1,
-    status: "In Stock",
-    topClient: "Ayesha Al-Maktoum",
-  },
-  {
-    id: "prod-2",
-    name: "Rose Gold Hand-Woven Abaya",
-    sku: "DB-ABA-004",
-    category: "Royal Abayas",
-    imageUrl:
-      "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=500&auto=format&fit=crop&q=80",
-    stockCount: 8,
-    acquisitionsCount: 39,
-    fabric: "Organza Silk & Metallic Thread Embroidery",
-    milestonePoints: 1,
-    status: "In Stock",
-    topClient: "Fatima Al-Zahra",
-  },
-  {
-    id: "prod-3",
-    name: "Midnight Lavender Silk Dress",
-    sku: "DB-GWN-012",
-    category: "Couture Gowns",
-    imageUrl:
-      "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=500&auto=format&fit=crop&q=80",
-    stockCount: 3,
-    acquisitionsCount: 29,
-    fabric: "French Tulle & Lavender Charmeuse Silk",
-    milestonePoints: 1,
-    status: "Low Stock",
-    topClient: "Sara Al-Hassan",
-  },
-  {
-    id: "prod-4",
-    name: "Pearl Encrypted Bridal Veil",
-    sku: "DB-VEL-008",
-    category: "Veils",
-    imageUrl:
-      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?w=500&auto=format&fit=crop&q=80",
-    stockCount: 5,
-    acquisitionsCount: 22,
-    fabric: "Hand-Strung Fresh Water Pearls & Soft Net",
-    milestonePoints: 1,
-    status: "In Stock",
-    topClient: "Sheikha Mariam",
-  },
-  {
-    id: "prod-5",
-    name: "Emerald Green Satin Robe",
-    sku: "DB-KIM-003",
-    category: "Silk Kimonos",
-    imageUrl:
-      "https://images.unsplash.com/photo-1509631179647-0177331693ae?w=500&auto=format&fit=crop&q=80",
-    stockCount: 11,
-    acquisitionsCount: 34,
-    fabric: "Italian Satin Silk & Gold Cuffs",
-    milestonePoints: 1,
-    status: "In Stock",
-    topClient: "Hina Mansoor",
-  },
-  {
-    id: "prod-6",
-    name: "Diamond Threaded Bridal Veil",
-    sku: "DB-VEL-019",
-    category: "Veils",
-    imageUrl:
-      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?w=500&auto=format&fit=crop&q=80",
-    stockCount: 2,
-    acquisitionsCount: 16,
-    fabric: "Pure Silver Filigree & Austrian Crystals",
-    milestonePoints: 1,
-    status: "Bespoke Order",
-    topClient: "Noor Al-Qasimi",
-  },
-];
+const dressInventory: DressProduct[] = [];
 
 export default function ProductsPage() {
   const [activeNavTab, setActiveNavTab] = useState("Products");
@@ -142,6 +57,10 @@ export default function ProductsPage() {
       d.fabric.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  const totalStock = dressInventory.reduce((acc, d) => acc + (d.stockCount || 0), 0);
+  const totalAcquisitions = dressInventory.reduce((acc, d) => acc + (d.acquisitionsCount || 0), 0);
+  const topProduct = dressInventory.length > 0 ? dressInventory[0].name : "None yet";
 
   return (
     <div className="flex min-h-screen bg-[#FAF7F2] text-[#2D142E] font-sans antialiased selection:bg-[#EADBEE] selection:text-[#2D142E] relative">
@@ -190,7 +109,7 @@ export default function ProductsPage() {
             </div>
             <div>
               <span className="text-[11px] font-semibold text-[#806782] block">Total Collections</span>
-              <span className="text-xl font-bold text-[#2D142E]">34 Exclusive Items</span>
+              <span className="text-xl font-bold text-[#2D142E]">{dressInventory.length} Items</span>
             </div>
           </div>
 
@@ -200,7 +119,7 @@ export default function ProductsPage() {
             </div>
             <div>
               <span className="text-[11px] font-semibold text-[#806782] block">Most Loved Design</span>
-              <span className="text-sm font-bold text-[#2D142E]">Imperial Velvet Kaftan</span>
+              <span className="text-sm font-bold text-[#2D142E]">{topProduct}</span>
             </div>
           </div>
 
@@ -210,7 +129,7 @@ export default function ProductsPage() {
             </div>
             <div>
               <span className="text-[11px] font-semibold text-[#806782] block">Atelier Stock</span>
-              <span className="text-xl font-bold text-[#2D142E]">182 Available</span>
+              <span className="text-xl font-bold text-[#2D142E]">{totalStock} Available</span>
             </div>
           </div>
 
@@ -220,7 +139,7 @@ export default function ProductsPage() {
             </div>
             <div>
               <span className="text-[11px] font-semibold text-[#806782] block">Total Acquisitions</span>
-              <span className="text-xl font-bold text-[#2D142E]">612 Dresses Acquired</span>
+              <span className="text-xl font-bold text-[#2D142E]">{totalAcquisitions} Acquired</span>
             </div>
           </div>
         </div>
@@ -268,79 +187,89 @@ export default function ProductsPage() {
 
           {/* Product Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredDresses.map((dress) => (
-              <div
-                key={dress.id}
-                onClick={() => setSelectedDressDetail(dress)}
-                className="bg-[#FAF6FA] hover:bg-[#F5ECF6] rounded-2xl p-4 border border-[#E8D4EA] hover:border-[#D5B5DC] transition-all cursor-pointer flex flex-col justify-between space-y-3 group shadow-2xs"
-              >
-                <div className="space-y-3">
-                  {/* Image & Status Tag */}
-                  <div className="relative h-48 rounded-xl overflow-hidden bg-[#E8D4EA]">
-                    <img
-                      src={dress.imageUrl}
-                      alt={dress.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#1D0A1F]/70 via-transparent to-transparent" />
-
-                    <div className="absolute top-2.5 left-2.5">
-                      <span
-                        className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold border backdrop-blur-xs ${
-                          dress.status === "In Stock"
-                            ? "bg-[#EAF5EC]/90 text-[#277D43] border-[#CEEAD4]"
-                            : dress.status === "Low Stock"
-                            ? "bg-[#FFF4E5]/90 text-[#B76E00] border-[#FFE2B8]"
-                            : "bg-[#F8EDF9]/90 text-[#682A6E] border-[#EAD0EC]"
-                        }`}
-                      >
-                        {dress.status}
-                      </span>
-                    </div>
-
-                    <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-[10px]">
-                      <span className="font-mono bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
-                        {dress.sku}
-                      </span>
-                      <span className="font-bold text-[#F5CC96] bg-[#2D142E]/80 px-2 py-0.5 rounded-md backdrop-blur-xs">
-                        +1 Dress Milestone
-                      </span>
-                    </div>
-                  </div>
-
-                  <div>
-                    <h3 className="font-serif font-bold text-sm text-[#2D142E] group-hover:text-[#682A6E] transition-colors">
-                      {dress.name}
-                    </h3>
-                    <p className="text-[11px] text-[#7C637E] mt-0.5 line-clamp-1">{dress.fabric}</p>
-                  </div>
-                </div>
-
-                <div className="pt-3 border-t border-[#EADBEE] space-y-2">
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[#8C718F] font-medium">Acquired by Clients:</span>
-                    <span className="font-bold text-[#2D142E]">{dress.acquisitionsCount} times</span>
-                  </div>
-
-                  <div className="flex items-center justify-between text-[11px]">
-                    <span className="text-[#8C718F] font-medium">Available Stock:</span>
-                    <span className="font-bold text-[#682A6E]">{dress.stockCount} units</span>
-                  </div>
-
-                  <div className="pt-1 flex gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setQuickActionType("log_purchase");
-                      }}
-                      className="flex-1 py-1.5 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
-                    >
-                      Log Client Acquisition
-                    </button>
-                  </div>
-                </div>
+            {filteredDresses.length === 0 ? (
+              <div className="py-12 text-center col-span-full space-y-3 bg-[#FAF6FA] rounded-2xl border border-dashed border-[#E3D0E5]">
+                <Shirt className="w-10 h-10 text-[#8C718F] mx-auto opacity-50" />
+                <h4 className="font-bold text-sm text-[#2D142E]">No dress designs found</h4>
+                <p className="text-xs text-[#7C637E] max-w-sm mx-auto">
+                  No dress designs exist in the catalog yet. Click &quot;Add New Design&quot; to add your first luxury piece.
+                </p>
               </div>
-            ))}
+            ) : (
+              filteredDresses.map((dress) => (
+                <div
+                  key={dress.id}
+                  onClick={() => setSelectedDressDetail(dress)}
+                  className="bg-[#FAF6FA] hover:bg-[#F5ECF6] rounded-2xl p-4 border border-[#E8D4EA] hover:border-[#D5B5DC] transition-all cursor-pointer flex flex-col justify-between space-y-3 group shadow-2xs"
+                >
+                  <div className="space-y-3">
+                    {/* Image & Status Tag */}
+                    <div className="relative h-48 rounded-xl overflow-hidden bg-[#E8D4EA]">
+                      <img
+                        src={dress.imageUrl}
+                        alt={dress.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#1D0A1F]/70 via-transparent to-transparent" />
+
+                      <div className="absolute top-2.5 left-2.5">
+                        <span
+                          className={`inline-block px-2.5 py-0.5 rounded-full text-[9px] font-bold border backdrop-blur-xs ${
+                            dress.status === "In Stock"
+                              ? "bg-[#EAF5EC]/90 text-[#277D43] border-[#CEEAD4]"
+                              : dress.status === "Low Stock"
+                              ? "bg-[#FFF4E5]/90 text-[#B76E00] border-[#FFE2B8]"
+                              : "bg-[#F8EDF9]/90 text-[#682A6E] border-[#EAD0EC]"
+                          }`}
+                        >
+                          {dress.status}
+                        </span>
+                      </div>
+
+                      <div className="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between text-white text-[10px]">
+                        <span className="font-mono bg-black/40 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                          {dress.sku}
+                        </span>
+                        <span className="font-bold text-[#F5CC96] bg-[#2D142E]/80 px-2 py-0.5 rounded-md backdrop-blur-xs">
+                          +1 Dress Milestone
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="font-serif font-bold text-sm text-[#2D142E] group-hover:text-[#682A6E] transition-colors">
+                        {dress.name}
+                      </h3>
+                      <p className="text-[11px] text-[#7C637E] mt-0.5 line-clamp-1">{dress.fabric}</p>
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-[#EADBEE] space-y-2">
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-[#8C718F] font-medium">Acquired by Clients:</span>
+                      <span className="font-bold text-[#2D142E]">{dress.acquisitionsCount} times</span>
+                    </div>
+
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="text-[#8C718F] font-medium">Available Stock:</span>
+                      <span className="font-bold text-[#682A6E]">{dress.stockCount} units</span>
+                    </div>
+
+                    <div className="pt-1 flex gap-2">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setQuickActionType("log_purchase");
+                        }}
+                        className="flex-1 py-1.5 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-[11px] font-bold shadow-2xs transition-all cursor-pointer"
+                      >
+                        Log Client Acquisition
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </main>
