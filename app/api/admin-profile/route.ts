@@ -19,8 +19,8 @@ export async function GET() {
         success: true,
         admin: {
           id: doc.id,
-          name: data.name || "Dubai Boutique",
-          phone: data.phone || "+919876543210",
+          name: data.name,
+          phone: data.phone,
         },
       });
     }
@@ -29,14 +29,10 @@ export async function GET() {
     console.log("Firestore admin GET fallback:", msg);
   }
 
-  return NextResponse.json({
-    success: true,
-    admin: {
-      id: "+919876543210",
-      name: "Siddiqa Parveen",
-      phone: "+91 95104 48090",
-    },
-  });
+  return NextResponse.json(
+    { success: false, error: "Admin profile not found in Firestore." },
+    { status: 404 }
+  );
 }
 
 export async function POST(req: Request) {

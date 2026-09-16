@@ -71,12 +71,8 @@ export default function LoginPage() {
         setErrorMsg(data.error || "Authentication failed.");
       }
     } catch (err) {
-      if (typeof window !== "undefined") {
-        localStorage.setItem("dubai_boutique_admin_auth", "true");
-        localStorage.setItem("dubai_boutique_admin_phone", phone);
-        localStorage.setItem("admin_phone", phone);
-      }
-      router.push("/");
+      console.error("Login request error:", err);
+      setErrorMsg("Network or server error during login. Please try again.");
     } finally {
       setIsLoading(false);
     }

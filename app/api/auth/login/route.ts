@@ -1,6 +1,20 @@
 import { NextResponse } from "next/server";
 import { adminDb } from "@/lib/firebaseAdmin";
 
+function get10DigitPhone(phone: string): string {
+  const digits = String(phone || "").replace(/[^0-9]/g, "");
+  if (digits.length === 12 && digits.startsWith("91")) {
+    return digits.slice(2);
+  }
+  if (digits.length === 11 && digits.startsWith("0")) {
+    return digits.slice(1);
+  }
+  if (digits.length > 10) {
+    return digits.slice(-10);
+  }
+  return digits;
+}
+
 export async function POST(req: Request) {
   try {
     const { phone, password } = await req.json();
@@ -14,74 +28,50 @@ export async function POST(req: Request) {
 
     const cleanPhone = String(phone).replace(/\s+/g, "").trim();
     const cleanPassword = String(password).trim();
+    const digits10 = get10DigitPhone(cleanPhone);
 
-    // 1. FAST INSTANT CHECK (0ms response time) for configured Admin Account
-    if (
-      (cleanPhone === "9510448090" || cleanPhone === "+919510448090") &&
-      cleanPassword === "Admin@123"
-    ) {
-      const response = NextResponse.json({
-        success: true,
-        admin: {
-          id: 1,
-          name: "Siddiqa Parveen",
-          phone: "+91 95104 48090",
-        },
-        message: "Admin authenticated successfully.",
-      });
-
-      response.cookies.set({
-        name: "dubai_admin_session",
-        value: "session_active_1",
-        httpOnly: true,
-        path: "/",
-        maxAge: 60 * 60 * 24 * 7,
-      });
-
-      return response;
-    }
-
-    // 2. Query Firestore with 1.2s fast timeout
+    // Query Firestore admins collection directly
     try {
-      const firestorePromise = adminDb
-        .collection("admins")
-        .where("phone", "==", cleanPhone)
-        .where("password", "==", cleanPassword)
-        .limit(1)
-        .get();
-
-      const timeoutPromise = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Firestore timeout")), 1200)
-      );
-
-      const snapshot: any = await Promise.race([firestorePromise, timeoutPromise]);
+      const snapshot = await adminDb.collection("admins").get();
 
       if (snapshot && !snapshot.empty) {
-        const docData = snapshot.docs[0].data();
-        const adminData = {
-          id: snapshot.docs[0].id,
-          name: docData.name || "Siddiqa Parveen",
-          phone: docData.phone || cleanPhone,
-        };
-
-        const response = NextResponse.json({
-          success: true,
-          admin: adminData,
-          message: "Admin authenticated successfully via Firestore.",
+        const matchedDoc = snapshot.docs.find((doc: any) => {
+          const docData = doc.data();
+          const docPhoneDigits = get10DigitPhone(docData.phone || doc.id);
+          const docPassword = String(docData.password || "").trim();
+          return (
+            (docPhoneDigits === digits10 || docData.phone === cleanPhone) &&
+            docPassword === cleanPassword
+          );
         });
 
-        response.cookies.set({
-          name: "dubai_admin_session",
-          value: `session_active_${adminData.id}`,
-          httpOnly: true,
-          path: "/",
-          maxAge: 60 * 60 * 24 * 7,
-        });
+        if (matchedDoc) {
+          const docData = matchedDoc.data();
+          const adminData = {
+            id: matchedDoc.id,
+            name: docData.name || "Admin",
+            phone: docData.phone || cleanPhone,
+          };
 
-        return response;
+          const response = NextResponse.json({
+            success: true,
+            admin: adminData,
+            message: "Admin authenticated successfully.",
+          });
+
+          response.cookies.set({
+            name: "dubai_admin_session",
+            value: `session_active_${adminData.id}`,
+            httpOnly: true,
+            path: "/",
+            maxAge: 60 * 60 * 24 * 7,
+          });
+
+          return response;
+        }
       }
     } catch (dbErr) {
-      console.log("Firestore query skipped/timed out:", dbErr);
+      console.error("Firestore authentication error:", dbErr);
     }
 
     return NextResponse.json(
@@ -96,3 +86,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+
