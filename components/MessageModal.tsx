@@ -77,19 +77,19 @@ export default function MessageModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D0A1F]/60 backdrop-blur-xs p-4 animate-in fade-in duration-200">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#E4CEE6] space-y-5 relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#1D0A1F]/60 backdrop-blur-xs p-3 sm:p-4 animate-in fade-in duration-200">
+      <div className="bg-white rounded-3xl max-w-lg w-full p-4 sm:p-6 shadow-2xl border border-[#E4CEE6] space-y-4 sm:space-y-5 relative max-h-[90vh] overflow-y-auto">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#F2E4F3] pb-4">
+        <div className="flex items-center justify-between border-b border-[#F2E4F3] pb-3 sm:pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#F4EBF5] flex items-center justify-center text-[#25D366]">
+            <div className="w-10 h-10 rounded-2xl bg-[#F4EBF5] flex items-center justify-center text-[#25D366] shrink-0">
               <MessageCircle className="w-5 h-5 fill-[#25D366]/20 stroke-[2.5]" />
             </div>
-            <div>
-              <h3 className="font-serif text-lg font-bold text-[#2D142E]">
+            <div className="min-w-0">
+              <h3 className="font-serif text-base sm:text-lg font-bold text-[#2D142E] truncate">
                 {customer ? `Message to ${customer.name}` : "Generate Client Message"}
               </h3>
-              <p className="text-xs text-[#866B88]">
+              <p className="text-xs text-[#866B88] truncate">
                 {customer ? `Phone: ${customer.phone}` : template?.title || "Custom WhatsApp Template"}
               </p>
             </div>
@@ -97,7 +97,7 @@ export default function MessageModal({
 
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer"
+            className="p-2 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer shrink-0"
           >
             <X className="w-4 h-4" />
           </button>
@@ -105,7 +105,7 @@ export default function MessageModal({
 
         {/* Details Card */}
         {customer && (
-          <div className="bg-[#FAF3FA] rounded-2xl p-3.5 border border-[#EEDBF0] flex items-center justify-between text-xs">
+          <div className="bg-[#FAF3FA] rounded-2xl p-3.5 border border-[#EEDBF0] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs">
             <div>
               <span className="font-bold text-[#2D142E] block text-sm">{customer.name}</span>
               <span className="text-[11px] text-[#7E6380]">
@@ -113,7 +113,7 @@ export default function MessageModal({
               </span>
             </div>
 
-            <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#2D142E] text-white">
+            <span className="px-3 py-1 rounded-full text-[10px] font-bold bg-[#2D142E] text-white self-start sm:self-auto">
               {customer.category}
             </span>
           </div>
@@ -134,10 +134,10 @@ export default function MessageModal({
         </div>
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-end gap-3 pt-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2.5 sm:gap-3 pt-2">
           <button
             onClick={handleCopy}
-            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-[#F3EBF4] hover:bg-[#EADBEE] text-[#58245D] text-xs font-semibold transition-colors cursor-pointer"
+            className="inline-flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-full bg-[#F3EBF4] hover:bg-[#EADBEE] text-[#58245D] text-xs font-semibold transition-colors cursor-pointer"
           >
             {copied ? <Check className="w-3.5 h-3.5 text-green-600" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? "Copied!" : "Copy Text"}</span>
@@ -145,7 +145,7 @@ export default function MessageModal({
 
           <button
             onClick={handleSendWhatsApp}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#1EBE5A] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
+            className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-full bg-[#25D366] hover:bg-[#1EBE5A] text-white text-xs font-bold shadow-md hover:shadow-lg transition-all cursor-pointer"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Send via WhatsApp</span>

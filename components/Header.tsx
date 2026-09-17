@@ -159,10 +159,10 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
       <div className="w-full relative rounded-3xl bg-gradient-to-r from-[#FAF3FA] via-[#FAF4F8] to-[#F5EAF1] border border-[#EADBEE] p-5 md:p-6 shadow-2xs min-h-[170px] flex flex-col justify-between gap-6">
         {/* Background Image of Fashion Woman on the Right Edge (Full Height) */}
         <div
-          className="absolute right-0 top-0 bottom-0 w-[45%] lg:w-[40%] bg-cover bg-center pointer-events-none z-0 opacity-90 hidden md:block rounded-r-3xl overflow-hidden"
+          className="absolute right-0 top-0 bottom-0 w-[40%] sm:w-[45%] lg:w-[40%] bg-cover bg-right sm:bg-center pointer-events-none z-0 opacity-60 sm:opacity-90 rounded-r-3xl overflow-hidden"
           style={{ backgroundImage: `url('/dubaiboutique_girl.png')` }}
         >
-          <div className="absolute inset-0 bg-gradient-to-r from-[#FAF4F8] via-[#FAF4F8]/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#FAF4F8] via-[#FAF4F8]/60 sm:via-[#FAF4F8]/40 to-transparent" />
         </div>
 
         {/* Top Row: Search Bar & Admin Controls */}
@@ -171,26 +171,26 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
             {onToggleSidebar && (
               <button
                 onClick={onToggleSidebar}
-                className="md:hidden p-2 rounded-full bg-white/90 border border-[#E3D3E5] text-[#4D2051] hover:bg-[#EADBEE] transition-all cursor-pointer shadow-2xs shrink-0"
+                className="p-2 rounded-full bg-white/90 border border-[#E3D3E5] text-[#4D2051] hover:bg-[#EADBEE] transition-all cursor-pointer shadow-2xs shrink-0"
                 title="Toggle Menu"
               >
                 <Menu className="w-4 h-4" />
               </button>
             )}
             {/* Search Bar */}
-            <div className="relative w-full sm:w-80 md:w-96">
+            <div className="relative w-full sm:w-72 md:w-80 lg:w-96">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C718F]" />
               <input
                 type="text"
                 placeholder="Search customers by name, phone or dress..."
                 onChange={(e) => onSearchChange?.(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 rounded-full bg-white/90 border border-[#E3D3E5] text-xs font-medium text-[#2D142E] placeholder-[#957C98] focus:outline-none focus:ring-2 focus:ring-[#713476]/30 transition-all shadow-2xs"
+                className="w-full pl-10 pr-4 py-2 rounded-full bg-white/90 border border-[#E3D3E5] text-xs font-medium text-[#2D142E] placeholder-[#957C98] placeholder:text-[11px] sm:placeholder:text-xs focus:outline-none focus:ring-2 focus:ring-[#713476]/30 transition-all shadow-2xs"
               />
             </div>
           </div>
 
           {/* Right Actions */}
-          <div className="flex items-center gap-3.5 self-end sm:self-auto relative">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 self-end sm:self-auto relative">
             {/* Notification Button & Popup */}
             <div className="relative" ref={notifRef}>
               <button
@@ -208,7 +208,7 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
 
               {/* Notification Dropdown */}
               {isNotificationsOpen && (
-                <div className="absolute right-0 top-12 z-[100] w-80 bg-white rounded-3xl p-4 shadow-2xl border border-[#E4CEE6] animate-in fade-in slide-in-from-top-2 duration-200 text-xs space-y-3">
+                <div className="absolute right-0 top-12 z-[100] w-72 sm:w-80 max-w-[calc(100vw-2rem)] bg-white rounded-3xl p-4 shadow-2xl border border-[#E4CEE6] animate-in fade-in slide-in-from-top-2 duration-200 text-xs space-y-3">
                   <div className="flex items-center justify-between border-b border-[#F2E4F3] pb-2.5">
                     <span className="font-serif font-bold text-[#2D142E] text-sm flex items-center gap-1.5">
                       <Bell className="w-4 h-4 text-[#682A6E]" />
@@ -264,7 +264,7 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
                   <img src="/db_logo.jpeg" alt="Dubai's Boutique Logo" className="w-full h-full object-cover" />
                 </div>
                 <div className="text-left leading-none">
-                  <span className="text-xs font-bold text-[#2D142E] block">Hi, {adminName}!</span>
+                  <span className="text-xs font-bold text-[#2D142E] block truncate max-w-[100px] sm:max-w-none">Hi, {adminName}!</span>
                   <span className="text-[9px] text-[#8C718F] font-medium block mt-0.5">Owner</span>
                 </div>
                 <ChevronDown
@@ -276,7 +276,7 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
 
               {/* ADMIN POPUP DROPDOWN OVERLAY (Only View Profile & Log Out) */}
               {isAdminMenuOpen && (
-                <div className="absolute right-0 top-12 z-[100] w-76 bg-white rounded-3xl p-4 shadow-2xl border border-[#E4CEE6] animate-in fade-in slide-in-from-top-2 duration-200 text-xs space-y-4">
+                <div className="absolute right-0 top-12 z-[100] w-72 sm:w-76 max-w-[calc(100vw-2rem)] bg-white rounded-3xl p-4 shadow-2xl border border-[#E4CEE6] animate-in fade-in slide-in-from-top-2 duration-200 text-xs space-y-4">
                   {/* Admin Profile Header */}
                   <div className="flex items-center gap-3 bg-gradient-to-br from-[#FAF3FA] to-[#F5EAF7] p-3.5 rounded-2xl border border-[#EEDBF0]">
                     <div className="w-11 h-11 rounded-full bg-[#2D142E] text-[#F5CC96] font-bold text-sm flex items-center justify-center border-2 border-[#D9BEDC] shadow-md shrink-0 overflow-hidden">
@@ -338,10 +338,10 @@ export default function Header({ onSearchChange, onToggleSidebar, hideBanner = f
 
         {/* Content Row: Greeting & Center Quote */}
         {!hideBanner && (
-          <div className="relative z-10 pt-2 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="relative z-10 pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             {/* Left Side: Greeting */}
             <div className="space-y-1.5 max-w-lg md:max-w-xl">
-              <h1 className="font-serif text-2xl md:text-3xl font-bold text-[#2D142E] tracking-tight flex items-center gap-2 whitespace-nowrap">
+              <h1 className="font-serif text-xl sm:text-2xl md:text-3xl font-bold text-[#2D142E] tracking-tight flex items-center gap-2 flex-wrap">
                 <span>Good Morning, {adminName}!</span>
                 <span className="text-[#A567A8] font-normal text-xl">♡</span>
               </h1>

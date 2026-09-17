@@ -53,4 +53,24 @@
   color: #79347E;
 }
 
+/* Hide scrollbar for clean horizontal carousel & tab scrolling */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
+/* Responsive touch target & mobile container safety */
+@media (max-width: 639px) {
+  input, select, textarea, button {
+    font-size: 14px; /* Prevents auto-zoom on iOS Safari */
+  }
+}
+
+/* Smooth modal overlay transitions */
+.backdrop-blur-mobile {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}

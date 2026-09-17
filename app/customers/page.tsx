@@ -130,7 +130,7 @@ export default function CustomersPage() {
   const [selectedCategory, setSelectedCategory] = useState("All");
 
   React.useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setIsSidebarOpen(false);
     }
   }, []);
@@ -529,11 +529,119 @@ export default function CustomersPage() {
                 className="w-full pl-9 pr-3 py-1.5 rounded-full bg-[#FAF6FA] border border-[#E3D0E5] text-[11px] font-medium text-[#2D142E] focus:outline-none focus:ring-2 focus:ring-[#682A6E]/30"
               />
             </div>
+                    {/* Mobile Card List (Visible on screens < 640px) */}
+          <div className="block sm:hidden space-y-3">
+            {filteredCustomers.length === 0 ? (
+              <div className="py-8 text-center text-xs font-semibold text-[#7C637E]">
+                No customers found matching your criteria.
+              </div>
+            ) : (
+              filteredCustomers.map((cust, idx) => {
+                const percentage = Math.min(
+                  100,
+                  Math.round((cust.dressesCount / cust.totalTarget) * 100)
+                );
+                const isElite = cust.tier === "Elite Circle";
+
+                return (
+                  <div
+                    key={cust.id}
+                    onClick={() => setActiveCustomerDrawer(cust)}
+                    className="bg-[#FAF3FA] p-3.5 rounded-2xl border border-[#EEDBF0] space-y-3 cursor-pointer shadow-2xs hover:border-[#682A6E]/40 transition-all"
+                  >
+                    {/* Top Row: Rank, Avatar, Name & Status Pill */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="text-[10px] font-bold text-[#7C637E] shrink-0">#{idx + 1}</span>
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4A194E] to-[#2D142E] text-[#F5CC96] border border-[#E4D2E6] shadow-2xs flex items-center justify-center font-serif text-xs font-bold shrink-0">
+                          {cust.name ? cust.name.charAt(0).toUpperCase() : "C"}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="font-bold text-[#2D142E] text-xs block truncate">{cust.name}</span>
+                          <span className="font-mono text-[#7C637E] text-[10px] block">{cust.phone}</span>
+                        </div>
+                      </div>
+                      <div className="shrink-0">
+                        {renderStatusPill(cust.statusText)}
+                      </div>
+                    </div>
+
+                    {/* Middle Stats Row */}
+                    <div className="bg-white p-2.5 rounded-xl border border-[#E9D6EB] space-y-1.5 text-xs">
+                      <div className="flex items-center justify-between text-[10px] font-bold text-[#58245D]">
+                        <span>Dresses: {cust.dressesCount} / {cust.totalTarget}</span>
+                        <span>Total: {cust.totalAmountINR}</span>
+                      </div>
+                      <div className="w-full bg-[#EFE3F1] h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className={`h-full rounded-full transition-all duration-500 ${
+                            isElite
+                              ? "bg-gradient-to-r from-[#D4AF37] to-[#C7963A]"
+                              : "bg-gradient-to-r from-[#803186] to-[#511F56]"
+                          }`}
+                          style={{ width: `${percentage}%` }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Bottom Actions Row */}
+                    <div className="flex items-center justify-between gap-1.5 pt-1" onClick={(e) => e.stopPropagation()}>
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => setQuickAddDressCust(cust)}
+                          className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white hover:bg-[#F3EAF4] text-[#682A6E] text-[10px] font-bold border border-[#E4CEE6] transition-all shadow-2xs cursor-pointer"
+                        >
+                          <Plus className="w-3 h-3 text-[#682A6E]" />
+                          <span>+ Dress</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setMessageCustomer(cust);
+                            setIsMessageModalOpen(true);
+                          }}
+                          className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-[10px] font-semibold transition-all shadow-2xs cursor-pointer"
+                        >
+                          <MessageCircle className="w-3 h-3 text-[#25D366] fill-[#25D366]/20 stroke-[2.5]" />
+                          <span>Message</span>
+                        </button>
+                      </div>
+
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => setActiveCustomerDrawer(cust)}
+                          className="p-1.5 rounded-full hover:bg-[#F3EAF4] text-[#682A6E] transition-colors"
+                          title="View Full Profile Page"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                        </button>
+
+                        <button
+                          onClick={() => setEditingCustomer(cust)}
+                          className="p-1.5 rounded-full hover:bg-[#F3EAF4] text-[#682A6E] transition-colors"
+                          title="Edit Client Details"
+                        >
+                          <Pencil className="w-3.5 h-3.5" />
+                        </button>
+
+                        <button
+                          onClick={(e) => handleDeleteCustomer(cust.id, e)}
+                          className="p-1.5 rounded-full hover:bg-red-50 text-red-600 transition-colors"
+                          title="Delete Client Record"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })
+            )}
           </div>
 
-          {/* Customers Directory Table */}
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px]">
+          {/* Desktop & Tablet Table (Visible on screens >= 640px) */}
+          <div className="hidden sm:block overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[720px] text-left text-[11px]">
               <thead>
                 <tr className="border-b border-[#F0E2F1] text-[#937896] font-semibold text-[10px]">
                   <th className="py-2.5 px-2 w-8">#</th>
@@ -678,29 +786,39 @@ export default function CustomersPage() {
                 })}
               </tbody>
             </table>
-          </div>
+          </div>  </div>
         </div>
       </main>
 
       {/* Full Page Customer Profile Overlay */}
       {activeCustomerDrawer && (
-        <div className="fixed inset-0 z-50 bg-[#FAF7F2] text-[#2D142E] overflow-y-auto animate-in fade-in duration-200 p-4 sm:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto space-y-6">
+        <div className="fixed inset-0 z-[120] bg-[#FAF7F2] text-[#2D142E] overflow-y-auto animate-in fade-in duration-200 p-3 sm:p-6 lg:p-8">
+          <div className="max-w-6xl mx-auto space-y-4 sm:space-y-6">
             {/* Top Navigation Bar */}
-            <div className="flex items-center justify-between bg-white rounded-2xl p-4 border border-[#E9D6EB] shadow-2xs">
-              <button
-                onClick={() => setActiveCustomerDrawer(null)}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#FAF3FA] hover:bg-[#F3EAF4] text-[#682A6E] text-xs font-bold transition-colors cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back to Client Directory</span>
-              </button>
+            <div className="bg-white rounded-2xl p-3 sm:p-4 border border-[#E9D6EB] shadow-2xs space-y-3 sm:space-y-0 sm:flex sm:items-center sm:justify-between">
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => setActiveCustomerDrawer(null)}
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#FAF3FA] hover:bg-[#F3EAF4] text-[#682A6E] text-xs font-bold transition-colors cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Back to Client Directory</span>
+                </button>
 
-              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setActiveCustomerDrawer(null)}
+                  className="sm:hidden p-1.5 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer"
+                  title="Close Profile"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1 sm:pb-0 w-full sm:w-auto">
                 {/* Quick Add Dress */}
                 <button
                   onClick={() => setQuickAddDressCust(activeCustomerDrawer)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-xs font-bold shadow-xs transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#2D142E] hover:bg-[#471E4A] text-white text-xs font-bold shadow-xs transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Plus className="w-3.5 h-3.5 text-[#F5CC96]" />
                   <span>+ Add Dress</span>
@@ -709,7 +827,7 @@ export default function CustomersPage() {
                 {/* Edit Button */}
                 <button
                   onClick={() => setEditingCustomer(activeCustomerDrawer)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#FAF3FA] hover:bg-[#F3EAF4] text-[#682A6E] text-xs font-bold border border-[#E4CEE6] transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#FAF3FA] hover:bg-[#F3EAF4] text-[#682A6E] text-xs font-bold border border-[#E4CEE6] transition-colors cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Pencil className="w-3.5 h-3.5 text-[#682A6E]" />
                   <span>Update Details</span>
@@ -718,10 +836,10 @@ export default function CustomersPage() {
                 {/* Delete Customer Button */}
                 <button
                   onClick={() => handleDeleteCustomer(activeCustomerDrawer.id)}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold border border-red-200 transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold border border-red-200 transition-colors cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <Trash2 className="w-3.5 h-3.5 text-red-600" />
-                  <span>Delete Client</span>
+                  <span className="hidden xs:inline">Delete Client</span>
                 </button>
 
                 {/* WhatsApp */}
@@ -730,15 +848,15 @@ export default function CustomersPage() {
                     setMessageCustomer(activeCustomerDrawer);
                     setIsMessageModalOpen(true);
                   }}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#25D366] hover:bg-[#1EBE5A] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer"
+                  className="inline-flex items-center gap-1.5 px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-[#25D366] hover:bg-[#1EBE5A] text-white text-xs font-bold shadow-xs hover:shadow-sm transition-all cursor-pointer whitespace-nowrap shrink-0"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Send WhatsApp</span>
+                  <span className="hidden xs:inline">Send WhatsApp</span>
                 </button>
 
                 <button
                   onClick={() => setActiveCustomerDrawer(null)}
-                  className="p-2 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer"
+                  className="hidden sm:block p-2 rounded-full hover:bg-[#F3EAF4] text-[#7A5B7D] transition-colors cursor-pointer shrink-0"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -746,20 +864,20 @@ export default function CustomersPage() {
             </div>
 
             {/* Profile Overview Header Card */}
-            <div className="bg-white rounded-3xl p-6 border border-[#E9D6EB] shadow-xs space-y-6">
-              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-                <div className="flex items-center gap-5">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#4A194E] to-[#2D142E] text-[#F5CC96] border-2 border-[#F5CC96]/60 shadow-md flex items-center justify-center font-serif text-2xl font-bold shrink-0">
+            <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#E9D6EB] shadow-xs space-y-4 sm:space-y-6">
+              <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6">
+                <div className="flex items-center gap-3.5 sm:gap-5">
+                  <div className="w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-gradient-to-br from-[#4A194E] to-[#2D142E] text-[#F5CC96] border-2 border-[#F5CC96]/60 shadow-md flex items-center justify-center font-serif text-xl sm:text-2xl font-bold shrink-0">
                     {activeCustomerDrawer.name ? activeCustomerDrawer.name.charAt(0).toUpperCase() : "C"}
                   </div>
-                  <div className="space-y-1.5">
-                    <div className="flex items-center gap-3 flex-wrap">
-                      <h2 className="font-serif text-2xl font-bold text-[#2D142E]">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h2 className="font-serif text-xl sm:text-2xl font-bold text-[#2D142E]">
                         {activeCustomerDrawer.name}
                       </h2>
                       {renderStatusPill(activeCustomerDrawer.statusText)}
                     </div>
-                    <p className="text-xs text-[#7A5B7D] font-medium flex items-center gap-2">
+                    <p className="text-[11px] sm:text-xs text-[#7A5B7D] font-medium flex items-center gap-1.5 flex-wrap">
                       {activeCustomerDrawer.city && (
                         <>
                           <span>📍 {activeCustomerDrawer.city}</span>
@@ -768,13 +886,13 @@ export default function CustomersPage() {
                       )}
                       <span>Joined {activeCustomerDrawer.joinDate}</span>
                     </p>
-                    <div className="flex items-center gap-4 text-xs font-medium text-[#58245D] pt-1 flex-wrap">
-                      <span className="flex items-center gap-1.5 font-mono">
+                    <div className="flex items-center gap-3 text-[11px] sm:text-xs font-medium text-[#58245D] pt-0.5 flex-wrap">
+                      <span className="flex items-center gap-1 font-mono">
                         <Phone className="w-3.5 h-3.5 text-[#86378D]" />
                         {activeCustomerDrawer.phone}
                       </span>
                       {activeCustomerDrawer.email && (
-                        <span className="flex items-center gap-1.5">
+                        <span className="flex items-center gap-1">
                           <Mail className="w-3.5 h-3.5 text-[#86378D]" />
                           {activeCustomerDrawer.email}
                         </span>
@@ -783,21 +901,21 @@ export default function CustomersPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-3 w-full md:w-auto">
-                  <div className="bg-[#FAF3FA] p-4 rounded-2xl border border-[#EEDBF0] text-center flex-1 md:w-36">
-                    <span className="text-[10px] font-bold text-[#8C718F] uppercase tracking-wider block">
+                <div className="flex items-center gap-2.5 w-full md:w-auto">
+                  <div className="bg-[#FAF3FA] p-3 sm:p-4 rounded-2xl border border-[#EEDBF0] text-center flex-1 md:w-36">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-[#8C718F] uppercase tracking-wider block">
                       Total Spent
                     </span>
-                    <span className="text-lg font-bold font-mono text-[#2D142E] mt-0.5 block">
+                    <span className="text-base sm:text-lg font-bold font-mono text-[#2D142E] mt-0.5 block">
                       {activeCustomerDrawer.totalAmountINR}
                     </span>
                   </div>
 
-                  <div className="bg-[#FAF3FA] p-4 rounded-2xl border border-[#EEDBF0] text-center flex-1 md:w-36">
-                    <span className="text-[10px] font-bold text-[#8C718F] uppercase tracking-wider block">
+                  <div className="bg-[#FAF3FA] p-3 sm:p-4 rounded-2xl border border-[#EEDBF0] text-center flex-1 md:w-36">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-[#8C718F] uppercase tracking-wider block">
                       Dresses Acquired
                     </span>
-                    <span className="text-lg font-bold font-mono text-[#682A6E] mt-0.5 block">
+                    <span className="text-base sm:text-lg font-bold font-mono text-[#682A6E] mt-0.5 block">
                       {activeCustomerDrawer.dressesCount} Dresses
                     </span>
                   </div>
@@ -805,13 +923,13 @@ export default function CustomersPage() {
               </div>
 
               {/* Milestone Progress Bar */}
-              <div className="bg-[#FAF6FA] rounded-2xl p-5 border border-[#E9D6EB] space-y-3">
-                <div className="flex items-center justify-between text-xs font-bold">
+              <div className="bg-[#FAF6FA] rounded-2xl p-4 sm:p-5 border border-[#E9D6EB] space-y-2.5 sm:space-y-3">
+                <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1 text-xs font-bold">
                   <div className="flex items-center gap-2 text-[#2D142E]">
-                    <Sparkles className="w-4 h-4 text-[#C7963A]" />
-                    <span>Annual Elite Circle Loyalty Milestone Target (12 Dresses)</span>
+                    <Sparkles className="w-4 h-4 text-[#C7963A] shrink-0" />
+                    <span className="truncate">Annual Elite Circle Loyalty Milestone Target (12 Dresses)</span>
                   </div>
-                  <span className="text-[#682A6E]">
+                  <span className="text-[#682A6E] shrink-0">
                     {activeCustomerDrawer.dressesCount} / {activeCustomerDrawer.totalTarget} Dresses (
                     {Math.min(
                       100,
@@ -833,7 +951,7 @@ export default function CustomersPage() {
                   />
                 </div>
 
-                <p className="text-xs text-[#7A5B7D]">
+                <p className="text-[11px] sm:text-xs text-[#7A5B7D]">
                   Current Status:{" "}
                   <strong className="text-[#682A6E]">{activeCustomerDrawer.statusText}</strong>.{" "}
                   {activeCustomerDrawer.dressesCount >= 12
@@ -846,8 +964,8 @@ export default function CustomersPage() {
             {/* Detailed Content */}
             <div className="space-y-6">
               {/* Acquisition History Table */}
-              <div className="bg-white rounded-3xl p-6 border border-[#E9D6EB] shadow-xs space-y-4">
-                <div className="flex items-center justify-between">
+              <div className="bg-white rounded-3xl p-4 sm:p-6 border border-[#E9D6EB] shadow-xs space-y-4">
+                <div className="flex flex-col xs:flex-row xs:items-center justify-between gap-1">
                   <h3 className="font-serif text-base font-bold text-[#2D142E] flex items-center gap-2">
                     <ShoppingBag className="w-4 h-4 text-[#682A6E]" />
                     <span>Purchase & Fitting Log</span>
@@ -857,7 +975,61 @@ export default function CustomersPage() {
                   </span>
                 </div>
 
-                <div className="overflow-x-auto">
+                {/* Mobile Log Cards (<640px) */}
+                <div className="block sm:hidden space-y-2.5">
+                  {(customerPurchases[activeCustomerDrawer.id] || []).length === 0 ? (
+                    <div className="py-4 text-center text-xs text-[#8C718F]">
+                      No dress purchases recorded yet.
+                    </div>
+                  ) : (
+                    (customerPurchases[activeCustomerDrawer.id] || []).map((item) => (
+                      <div
+                        key={item.id}
+                        className="bg-[#FAF6FA] border border-[#F0E2F1] rounded-xl p-3 space-y-2"
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs text-[#2D142E]">{item.name}</span>
+                          <span className="px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                            {item.status}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px]">
+                          <span className="text-[#86378D] font-medium">{item.collection}</span>
+                          <span className="font-mono font-bold text-[#58245D]">{item.amount}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] text-[#7C637E] pt-1 border-t border-[#F0E2F1]">
+                          <span>Acquisition: {item.date} ({item.qty || 1} Pcs)</span>
+                          <div className="flex items-center gap-1">
+                            <button
+                              onClick={() =>
+                                setEditingDressItem({
+                                  customerId: activeCustomerDrawer.id,
+                                  item: { ...item },
+                                })
+                              }
+                              className="p-1 rounded-full hover:bg-[#F3EAF4] text-[#682A6E]"
+                              title="Update"
+                            >
+                              <Pencil className="w-3.5 h-3.5" />
+                            </button>
+                            <button
+                              onClick={() =>
+                                handleDeleteDressPurchase(activeCustomerDrawer.id, item.id)
+                              }
+                              className="p-1 rounded-full hover:bg-red-50 text-red-600"
+                              title="Delete"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Desktop Log Table (>=640px) */}
+                <div className="hidden sm:block overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead>
                       <tr className="border-b border-[#F0E2F1] text-[#937896] font-semibold text-[11px]">

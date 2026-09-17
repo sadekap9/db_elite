@@ -27,6 +27,12 @@ export default function LoyaltyProgramPage() {
   const [loading, setLoading] = useState(true);
 
   React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
+  React.useEffect(() => {
     fetch("/api/customers")
       .then((res) => res.json())
       .then((data) => {
@@ -143,8 +149,91 @@ export default function LoyaltyProgramPage() {
             </button>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px]">
+          {/* Mobile View Cards (<640px) */}
+          <div className="block sm:hidden space-y-3">
+            {milestoneClients.map((m) => {
+              const percentage = Math.min(100, Math.round((m.dressesCount / m.target) * 100));
+              const isUnlocked = m.dressesCount >= m.target;
+              return (
+                <div
+                  key={m.rank}
+                  className="bg-[#FAF6FA] border border-[#F0E2F1] rounded-xl p-3.5 space-y-3 shadow-2xs"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs text-[#58245D]">#{m.rank} Rank</span>
+                    <span
+                      className={`px-2.5 py-0.5 rounded-full text-[9px] font-bold border ${
+                        isUnlocked
+                          ? "bg-[#FCF6E7] text-[#C7963A] border-[#F4E3C1]"
+                          : "bg-[#F5ECF6] text-[#79347E] border-[#E6CFE8]"
+                      }`}
+                    >
+                      {m.tier}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2.5 pt-1 border-t border-[#F0E2F1]">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={m.avatarUrl}
+                      alt={m.name}
+                      className="w-9 h-9 rounded-full object-cover border border-[#E4D2E6] shrink-0"
+                    />
+                    <div>
+                      <h4 className="font-bold text-xs text-[#2D142E]">{m.name}</h4>
+                      <p className="text-[10px] text-[#8C718F] font-mono">{m.phone}</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-2.5 rounded-lg border border-[#EADBEE] space-y-1.5">
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[#58245D]">
+                      <span>12-Dress Milestone</span>
+                      <span>{m.dressesCount} / {m.target} ({percentage}%)</span>
+                    </div>
+                    <div className="w-full bg-[#EFE3F1] h-2 rounded-full overflow-hidden">
+                      <div
+                        className={`h-full rounded-full ${
+                          isUnlocked
+                            ? "bg-gradient-to-r from-[#D4AF37] to-[#C7963A]"
+                            : "bg-gradient-to-r from-[#803186] to-[#511F56]"
+                        }`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-[#682A6E] font-semibold text-right pt-0.5">
+                      {m.status}
+                    </div>
+                  </div>
+
+                  <div className="pt-1">
+                    <button
+                      onClick={() => {
+                        setMessageCustomer({
+                          id: m.rank,
+                          name: m.name,
+                          phone: m.phone,
+                          dressesCount: m.dressesCount,
+                          totalTarget: m.target,
+                          lastPurchase: "Recent",
+                          statusText: m.status,
+                          category: "Almost Elite",
+                        });
+                        setIsMessageModalOpen(true);
+                      }}
+                      className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[#2D142E] text-white text-[11px] font-semibold"
+                    >
+                      <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]/20" />
+                      <span>Dispatch Message</span>
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
+          {/* Desktop Table View (>=640px) */}
+          <div className="hidden sm:block overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[700px] text-left text-[11px]">
               <thead>
                 <tr className="border-b border-[#F0E2F1] text-[#937896] font-semibold text-[10px]">
                   <th className="py-2.5 px-2 w-8">Rank</th>

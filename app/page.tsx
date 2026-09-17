@@ -18,7 +18,7 @@ export default function Home() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   React.useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setIsSidebarOpen(false);
     }
   }, []);
@@ -67,7 +67,7 @@ export default function Home() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 p-4 lg:p-5 space-y-4 max-w-[1440px] mx-auto overflow-y-auto">
+      <main className="flex-1 min-w-0 p-3 sm:p-4 lg:p-5 space-y-3.5 sm:space-y-4 max-w-[1440px] mx-auto overflow-y-auto">
         {/* Top Header with Burger Toggle */}
         <Header
           onSearchChange={setSearchQuery}

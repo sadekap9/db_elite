@@ -79,28 +79,28 @@ export default function MetricsGrid() {
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
+    <div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3">
       {metrics.map((item, idx) => {
         const Icon = item.icon;
         return (
           <div
             key={idx}
-            className={`bg-white rounded-2xl p-3 md:p-3.5 border ${item.borderColor} shadow-2xs hover:shadow-xs transition-all duration-150 flex items-center gap-3 group`}
+            className={`bg-white rounded-2xl p-3 sm:p-3.5 border ${item.borderColor} shadow-2xs hover:shadow-xs transition-all duration-150 flex items-center gap-2.5 sm:gap-3 group min-w-0`}
           >
             <div
-              className={`w-9 h-9 rounded-full ${item.bgColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-150`}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full ${item.bgColor} flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform duration-150`}
             >
-              <Icon className={`w-4 h-4 ${item.iconColor}`} />
+              <Icon className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${item.iconColor}`} />
             </div>
 
-            <div className="space-y-0.5 leading-none">
-              <span className="text-[11px] font-semibold text-[#806782] block">
+            <div className="space-y-0.5 leading-none min-w-0 flex-1">
+              <span className="text-[10px] sm:text-[11px] font-semibold text-[#806782] block truncate">
                 {item.title}
               </span>
-              <div className="text-xl font-bold text-[#2D142E] tracking-tight font-sans">
+              <div className="text-lg sm:text-xl font-bold text-[#2D142E] tracking-tight font-sans">
                 {item.value}
               </div>
-              <span className="text-[9px] text-[#977D99] font-medium block">
+              <span className="text-[9px] text-[#977D99] font-medium block truncate">
                 {item.subtext}
               </span>
             </div>

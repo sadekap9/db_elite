@@ -41,7 +41,7 @@ export default function PurchasesPage() {
   const [quickActionType, setQuickActionType] = useState<string | null>(null);
 
   React.useEffect(() => {
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
       setIsSidebarOpen(false);
     }
   }, []);
@@ -198,8 +198,80 @@ export default function PurchasesPage() {
             </div>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-[11px]">
+          {/* Mobile View Cards (<640px) */}
+          <div className="block sm:hidden space-y-3">
+            {filteredPurchases.map((rec) => (
+              <div
+                key={rec.id}
+                className="bg-[#FAF6FA] border border-[#F0E2F1] rounded-xl p-3.5 space-y-2.5 shadow-2xs"
+              >
+                <div className="flex items-center justify-between">
+                  <span className="font-mono text-xs font-bold text-[#58245D]">{rec.id}</span>
+                  <span
+                    className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${
+                      rec.status === "Delivered"
+                        ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                        : rec.status === "Fitting Scheduled"
+                        ? "bg-amber-50 text-amber-700 border-amber-200"
+                        : "bg-purple-50 text-purple-700 border-purple-200"
+                    }`}
+                  >
+                    {rec.status}
+                  </span>
+                </div>
+
+                <div className="flex items-center gap-2.5 pt-1 border-t border-[#F0E2F1]">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#4A194E] to-[#2D142E] text-[#F5CC96] border border-[#E4D2E6] flex items-center justify-center font-serif text-xs font-bold shrink-0">
+                    {rec.customerName ? rec.customerName.charAt(0).toUpperCase() : "C"}
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-[#2D142E]">{rec.customerName}</h4>
+                    <p className="text-[10px] text-[#8C718F] font-mono">{rec.phone}</p>
+                  </div>
+                </div>
+
+                <div className="bg-white p-2.5 rounded-lg border border-[#EADBEE] space-y-1">
+                  <div className="flex items-center justify-between text-xs font-semibold text-[#2D142E]">
+                    <span>{rec.dressName}</span>
+                    <span className="text-[10px] text-[#86378D] font-medium">{rec.collection}</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[10px] text-[#7C637E]">
+                    <span>Acquisition: {rec.date}</span>
+                    <span className="inline-flex items-center gap-1 font-bold text-[#682A6E]">
+                      <Sparkles className="w-2.5 h-2.5 text-[#C7963A]" />
+                      {rec.milestoneImpact}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="pt-1 flex items-center justify-end">
+                  <button
+                    onClick={() => {
+                      setMessageCustomer({
+                        id: 1,
+                        name: rec.customerName,
+                        phone: rec.phone,
+                        dressesCount: 11,
+                        totalTarget: 12,
+                        lastPurchase: rec.date,
+                        statusText: rec.milestoneImpact,
+                        category: "Almost Elite",
+                      });
+                      setIsMessageModalOpen(true);
+                    }}
+                    className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-[#2D142E] text-white text-[11px] font-semibold"
+                  >
+                    <MessageCircle className="w-3.5 h-3.5 text-[#25D366] fill-[#25D366]/20" />
+                    <span>Confirm Update</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (>=640px) */}
+          <div className="hidden sm:block overflow-x-auto -mx-1 px-1">
+            <table className="w-full min-w-[700px] text-left text-[11px]">
               <thead>
                 <tr className="border-b border-[#F0E2F1] text-[#937896] font-semibold text-[10px]">
                   <th className="py-2.5 px-3">Order ID</th>

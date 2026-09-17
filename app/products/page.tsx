@@ -48,6 +48,12 @@ export default function ProductsPage() {
   const [quickActionType, setQuickActionType] = useState<string | null>(null);
   const [selectedDressDetail, setSelectedDressDetail] = useState<DressProduct | null>(null);
 
+  React.useEffect(() => {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   const filteredDresses = dressInventory.filter((d) => {
     const matchesCategory = selectedCategory === "All" || d.category === selectedCategory;
     const matchesSearch =
@@ -73,7 +79,7 @@ export default function ProductsPage() {
       />
 
       {/* Main Content Area */}
-      <main className="flex-1 min-w-0 p-4 lg:p-5 space-y-4 max-w-[1440px] mx-auto overflow-y-auto">
+      <main className="flex-1 min-w-0 p-3 sm:p-4 lg:p-5 space-y-3.5 sm:space-y-4 max-w-[1440px] mx-auto overflow-y-auto">
         {/* Top Header */}
         <Header
           onSearchChange={setSearchQuery}
